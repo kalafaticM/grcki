@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ελληνικά — praktični grčki za putovanje</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gips:#FBF9F4;      /* zid okrečen u belo */
+  --gips2:#F2EEE4;
+  --egej:#2E6FA7;      /* egejsko plavo */
+  --egej-svetlo:#DCE9F4;
+  --bugenvilija:#C6497B;/* akcenat */
+  --maslina:#6E7F4E;
+  --mastilo:#1E2A33;
+  --tiho:#6B7A85;
+  --ivica:#E3DDD0;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--gips);color:var(--mastilo);
+  font:400 16px/1.6 Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--egej)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* ── zaglavlje ── */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(251,249,244,.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--ivica);
+}
+.hd{display:flex;align-items:center;gap:16px;padding:12px 0;flex-wrap:wrap}
+.logo{font:800 22px/1 Fraunces,serif;letter-spacing:-.02em;white-space:nowrap}
+.logo span{color:var(--egej)}
+#q{
+  flex:1;min-width:180px;border:1.5px solid var(--ivica);border-radius:999px;
+  padding:10px 16px;font:400 15px Inter,sans-serif;background:#fff;color:var(--mastilo);
+}
+#q:focus{outline:none;border-color:var(--egej);box-shadow:0 0 0 3px var(--egej-svetlo)}
+.hd-akcije{display:flex;gap:8px}
+.mini{
+  border:1.5px solid var(--ivica);background:#fff;border-radius:999px;
+  padding:9px 14px;font:500 14px Inter,sans-serif;color:var(--mastilo);cursor:pointer;
+}
+.mini:hover{border-color:var(--egej);color:var(--egej)}
+.mini.on{background:var(--egej);border-color:var(--egej);color:#fff}
+
+/* ── hero ── */
+.hero{padding:56px 0 40px;border-bottom:1px solid var(--ivica)}
+.hero h1{
+  font:800 clamp(34px,6vw,58px)/1.05 Fraunces,serif;
+  letter-spacing:-.03em;margin:0 0 14px;max-width:16ch;
+}
+.hero h1 em{font-style:normal;color:var(--egej)}
+.hero p{font-size:18px;color:var(--tiho);max-width:52ch;margin:0 0 26px}
+.brojke{display:flex;gap:28px;flex-wrap:wrap}
+.brojka b{display:block;font:600 26px Fraunces,serif;color:var(--bugenvilija)}
+.brojka span{font-size:13px;color:var(--tiho);text-transform:uppercase;letter-spacing:.08em}
+
+/* ── filteri ── */
+.filteri{display:flex;gap:8px;flex-wrap:wrap;padding:26px 0 6px}
+
+/* ── mreža lekcija ── */
+.mreza{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;padding:18px 0 60px}
+.kart{
+  background:#fff;border:1px solid var(--ivica);border-radius:var(--r);
+  padding:20px;cursor:pointer;transition:.18s;text-align:left;font:inherit;color:inherit;
+}
+.kart:hover{border-color:var(--egej);transform:translateY(-2px);box-shadow:0 8px 24px rgba(46,111,167,.10)}
+.kart:focus-visible{outline:2px solid var(--egej);outline-offset:2px}
+.oznaka{
+  display:inline-block;font:500 11px IBM Plex Mono,monospace;letter-spacing:.1em;
+  color:var(--egej);background:var(--egej-svetlo);padding:3px 8px;border-radius:6px;margin-bottom:10px;
+}
+.kart h3{font:600 19px/1.25 Fraunces,serif;margin:0 0 4px}
+.kart .gr{font-size:14px;color:var(--bugenvilija);margin:0 0 8px}
+.kart .op{font-size:14px;color:var(--tiho);margin:0}
+.prazno{padding:50px 0;color:var(--tiho);text-align:center;grid-column:1/-1}
+
+/* ── modal lekcije ── */
+.pozadina{
+  position:fixed;inset:0;background:rgba(30,42,51,.45);z-index:100;
+  display:none;align-items:flex-start;justify-content:center;padding:24px 12px;overflow-y:auto;
+}
+.pozadina.vidi{display:flex}
+.list{
+  background:var(--gips);border-radius:18px;max-width:760px;width:100%;
+  box-shadow:0 24px 60px rgba(30,42,51,.28);position:relative;
+}
+.list-vrh{
+  position:sticky;top:0;background:var(--gips);border-bottom:1px solid var(--ivica);
+  padding:22px 26px 16px;border-radius:18px 18px 0 0;z-index:2;
+}
+.list-vrh h2{font:800 28px/1.1 Fraunces,serif;margin:8px 0 2px;letter-spacing:-.02em}
+.list-vrh .gr{color:var(--bugenvilija);font-size:15px;margin:0}
+.zatvori{
+  position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--ivica);background:#fff;cursor:pointer;font-size:18px;color:var(--tiho);line-height:1;
+}
+.zatvori:hover{border-color:var(--bugenvilija);color:var(--bugenvilija)}
+.telo{padding:8px 26px 30px}
+.telo h4{
+  font:500 12px IBM Plex Mono,monospace;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--tiho);margin:30px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--ivica);
+}
+.telo h4:first-child{margin-top:20px}
+
+.par{padding:9px 0;border-bottom:1px dashed var(--ivica)}
+.par .g{font-weight:600;color:var(--egej)}
+.par .s{color:var(--tiho);font-size:15px}
+.par .iz,.replika .iz{font:400 13.5px IBM Plex Mono,monospace;color:var(--maslina);margin:1px 0}
+.zad .iz{font:400 13px IBM Plex Mono,monospace;color:var(--maslina);margin-top:3px}
+
+.rec{
+  display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:10px 14px;
+  background:#fff;border:1px solid var(--ivica);border-radius:10px;padding:12px 14px;
+}
+.rec div{padding:5px 0;font-size:15px;border-bottom:1px solid var(--gips2)}
+.rec div:nth-last-child(-n+3){border-bottom:none}
+.rec .iz{font:400 14px IBM Plex Mono,monospace;color:var(--maslina)}
+.rec .g{font-weight:600;color:var(--egej)}
+
+.dij{background:#fff;border:1px solid var(--ivica);border-radius:10px;padding:6px 16px}
+.replika{padding:11px 0;border-bottom:1px solid var(--gips2)}
+.replika:last-child{border-bottom:none}
+.replika .g{font-weight:600;color:var(--mastilo)}
+.replika .s{color:var(--tiho);font-size:14px}
+.replika.b .g{color:var(--egej)}
+
+.napomena{
+  background:var(--egej-svetlo);border-left:3px solid var(--egej);
+  border-radius:0 10px 10px 0;padding:14px 16px;font-size:15px;
+}
+
+/* vežba */
+.vezba{counter-reset:v}
+.zad{background:#fff;border:1px solid var(--ivica);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.zad .pit{font-size:15px;margin-bottom:8px}
+.zad .pit::before{
+  counter-increment:v;content:counter(v) ".";
+  font:500 13px IBM Plex Mono,monospace;color:var(--bugenvilija);margin-right:8px;
+}
+.otkrij{
+  border:1px solid var(--ivica);background:var(--gips2);border-radius:8px;
+  padding:6px 12px;font:500 13px Inter,sans-serif;cursor:pointer;color:var(--tiho);
+}
+.otkrij:hover{border-color:var(--maslina);color:var(--maslina)}
+.odg{display:none;margin-top:8px;font-weight:600;color:var(--maslina)}
+.odg.vidi{display:block}
+
+/* kartice za učenje */
+.karta-flip{
+  background:#fff;border:1px solid var(--ivica);border-radius:14px;
+  padding:40px 24px;text-align:center;min-height:190px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+}
+.karta-flip .veliko{font:600 30px Fraunces,serif;color:var(--egej);line-height:1.2}
+.karta-flip .malo{font-size:17px;color:var(--tiho);min-height:26px}
+.flip-kontrole{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.flip-brojac{text-align:center;font:500 13px IBM Plex Mono,monospace;color:var(--tiho);margin-top:10px}
+
+/* tabovi */
+.tabovi{display:flex;gap:6px;background:var(--gips2);padding:4px;border-radius:999px}
+.tab{
+  border:none;background:none;border-radius:999px;padding:8px 18px;cursor:pointer;
+  font:600 14px Inter,sans-serif;color:var(--tiho);white-space:nowrap;
+}
+.tab.on{background:#fff;color:var(--egej);box-shadow:0 1px 3px rgba(30,42,51,.10)}
+
+/* lekcije kursa */
+.dani{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;padding:18px 0 60px}
+.dan{
+  background:#fff;border:1px solid var(--ivica);border-radius:var(--r);
+  padding:18px;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:.18s;
+  display:flex;gap:14px;align-items:flex-start;
+}
+.dan:hover{border-color:var(--bugenvilija);transform:translateY(-2px);box-shadow:0 8px 24px rgba(198,73,123,.10)}
+.dan:focus-visible{outline:2px solid var(--egej);outline-offset:2px}
+.dan-br{
+  flex:none;width:38px;height:38px;border-radius:10px;background:var(--egej-svetlo);
+  color:var(--egej);display:flex;align-items:center;justify-content:center;
+  font:600 15px Fraunces,serif;
+}
+.dan.o .dan-br{background:#F6E4EC;color:var(--bugenvilija);font-size:13px}
+.dan h3{font:600 16px/1.3 Fraunces,serif;margin:2px 0 3px}
+.dan .pod{font-size:13px;color:var(--tiho)}
+
+/* sadržaj lekcije u modalu */
+.k-pasus{margin:12px 0;font-size:15.5px}
+.k-lista{margin:12px 0 12px 4px;padding-left:20px;font-size:15.5px}
+.k-lista li{margin:5px 0}
+.k-tab{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px;
+  background:#fff;border:1px solid var(--ivica);border-radius:10px;overflow:hidden}
+.k-tab th{
+  background:var(--egej-svetlo);color:var(--egej);text-align:left;
+  font:600 12px Inter,sans-serif;letter-spacing:.04em;padding:9px 12px;
+}
+.k-tab td{padding:8px 12px;border-top:1px solid var(--gips2);vertical-align:top}
+.k-tab tr:nth-child(even) td{background:#FCFBF8}
+.k-tab td:first-child{font-weight:500}
+.k-omot{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.telo b{color:var(--mastilo)}
+.telo i{color:var(--egej);font-style:normal;font-weight:500}
+
+footer{border-top:1px solid var(--ivica);padding:30px 0 44px;color:var(--tiho);font-size:14px}
+
+@media(max-width:560px){
+  .rec{grid-template-columns:1fr;gap:0}
+  .rec .g,.rec .iz{padding-bottom:0;border:none}
+  .rec .iz{padding-top:0}
+  .telo,.list-vrh{padding-left:18px;padding-right:18px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hd">
+    <div class="logo">Ελληνικά<span>.</span></div>
+    <input id="q" type="search" placeholder="Traži reč ili frazu — npr. račun, νερό, plaža" aria-label="Pretraga">
+    <div class="tabovi" id="tabovi">
+      <button class="tab on" data-tab="kurs">Kurs</button>
+      <button class="tab" data-tab="situacije">Situacije</button>
+    </div>
+    <div class="hd-akcije">
+      <button class="mini" id="btn-flip">Kartice</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Grčki za <em>početak</em>.</h1>
+    <p id="hero-p">Petnaest lekcija gramatike, jedna dnevno — od azbuke do prošlog vremena. Rečnik, dijalog i vežbe sa rešenjima.</p>
+    <div class="brojke" id="brojke"></div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div id="panel-kurs">
+    <div class="dani" id="dani"></div>
+  </div>
+  <div id="panel-situacije" hidden>
+    <div class="filteri" id="filteri"></div>
+    <div class="mreza" id="mreza"></div>
+  </div>
+</div>
+
+<footer class="wrap">
+  Praktični kurs grčkog jezika · dodatak A · situacije A1–A24
+</footer>
+
+<div class="pozadina" id="modal">
+  <div class="list" role="dialog" aria-modal="true" aria-labelledby="m-naslov">
+    <div class="list-vrh">
+      <button class="zatvori" id="zatvori" aria-label="Zatvori">✕</button>
+      <span class="oznaka" id="m-oznaka"></span>
+      <h2 id="m-naslov"></h2>
+      <p class="gr" id="m-gr"></p>
+    </div>
+    <div class="telo" id="m-telo"></div>
+  </div>
+</div>
+
+<script>
+const KURS = [{"vrsta":"odeljak","br":"","naslov":"Kako koristiti ovaj kurs","blokovi":[{"tip":"pasus","tekst":"Kurs obuhvata najvažnije sadržaje nivoa A1 prema CEFR-u: azbuku i izgovor, rod i član, osnovnu upotrebu nominativa, akuzativa i genitiva, glagole A i B grupe u prezentu, najčešće oblike prošlog i budućeg vremena, konstrukcije sa να, prideve, zamenice, predloge i priloge. Težište je na turističkoj i svakodnevnoj komunikaciji."},{"tip":"pasus","tekst":"<b>Ritam:</b> jedna lekcija dnevno, 45--60 minuta. Svaka lekcija ima: gramatiku → rečnik → dijalog → vežbe. Rešenja su na kraju dokumenta."},{"tip":"pasus","tekst":"Transkripcija: koristi se pojednostavljena srpska transkripcija u zagradama. Ona služi samo kao pomoć na početku; cilj je da se što pre čita grčko pismo. Grčki naglasak je obavezan u pisanju višesložnih reči. Promena mesta naglaska ponekad menja značenje: γέρος = starac, γερός = jak."}]},{"vrsta":"lekcija","br":"0","naslov":"Azbuka, izgovor, naglasak","blokovi":[{"tip":"podnaslov","tekst":"Alfabet (24 slova)"},{"tip":"tabela","zaglavlje":["<b>Slovo</b>","<b>Ime</b>","<b>Izgovor</b>"],"redovi":[["Α α","άλφα","a"],["Β β","βήτα","<b>v</b> (ne b!)"],["Γ γ","γάμα","grleno <i>g</i> / pred e,i → <i>j</i>"],["Δ δ","δέλτα","zvučno <i>th</i> (kao eng. <i>this</i>)"],["Ε ε","έψιλον","e"],["Ζ ζ","ζήτα","z"],["Η η","ήτα","<b>i</b>"],["Θ θ","θήτα","bezvučno <i>th</i> (kao eng. <i>think</i>)"],["Ι ι","γιώτα","i"],["Κ κ","κάπα","k"],["Λ λ","λάμδα","l"],["Μ μ","μι","m"],["Ν ν","νι","n"],["Ξ ξ","ξι","ks"],["Ο ο","όμικρον","o"],["Π π","πι","p"],["Ρ ρ","ρο","r"],["Σ σ/ς","σίγμα","s (<b>ς</b> samo na kraju reči)"],["Τ τ","ταφ","t"],["Υ υ","ύψιλον","<b>i</b>"],["Φ φ","φι","f"],["Χ χ","χι","h"],["Ψ ψ","ψι","ps"],["Ω ω","ωμέγα","<b>o</b>"]]},{"tip":"pasus","tekst":"Zapamti: β = v; η i υ najčešće se čitaju kao i; ω se čita kao o. Posebno vežbaj θ, δ, χ i γ, jer nemaju potpuno iste glasove u srpskom."},{"tip":"podnaslov","tekst":"Dvoglasi i grupe (obavezno naučiti)"},{"tip":"tabela","zaglavlje":["<b>Grupa</b>","<b>Izgovor</b>","<b>Primer</b>"],"redovi":[["αι","<b>e</b>","και (ke) = i"],["ει, οι, υι","<b>i</b>","είναι (<b>i</b>ne) = jeste"],["ου","<b>u</b>","ούζο (<b>u</b>zo)"],["αυ","av / af","αυτό (af<b>to</b>) = ovo"],["ευ","ev / ef","ευχαριστώ (efhari<b>sto</b>)"],["μπ","b (na početku) / mb (u sredini)","μπίρα (<b>bi</b>ra) = pivo"],["ντ","d / nd","ντομάτα (do<b>ma</b>ta) = paradajz"],["γκ, γγ","g / ng","γκαρσόν (gar<b>son</b>)"],["τσ","c/č (meko)","τσάι (<b>ca</b>i) = čaj"],["τζ","dž","τζατζίκι (dza<b>dzi</b>ki)"],["γι, γει","j","γιατί (ja<b>ti</b>) = zašto"]]},{"tip":"pasus","tekst":"Pravilo za αυ/ευ: pred bezvučnim suglasnikom (κ, π, τ, φ, θ, χ, σ, ξ, ψ) čita se <b>af/ef</b>, inače <b>av/ev</b>."},{"tip":"podnaslov","tekst":"Interpunkcija"},{"tip":"lista","stavke":["Znak pitanja je <b>;</b> — Πού είναι; = Gde je?","Tačka-zapeta je · (ano teleia).","Naglasak (´) piše se <b>uvek</b> na višesložnim rečima."]},{"tip":"podnaslov","tekst":"Vežba 0"},{"tip":"pasus","tekst":"Pročitaj naglas: <i>καλημέρα, ευχαριστώ, ναι, όχι, μπίρα, ψωμί, νερό, είναι, αυτό, τσάι.</i>"},{"tip":"pasus","tekst":"Samoprovera: pokušaj da pročitaš reči najpre bez transkripcije, zatim proveri izgovor. Obrati pažnju na ευχαριστώ (efharistó), όχι (óhi) i αυτό (aftó)."}]},{"vrsta":"lekcija","br":"1","naslov":"Pozdravi, lične zamenice, glagol ΕΙΜΑΙ (biti)","blokovi":[{"tip":"podnaslov","tekst":"Pozdravi"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Izgovor</b>","<b>Značenje</b>"],"redovi":[["Καλημέρα","kali<b>me</b>ra","Dobro jutro / dobar dan (do ~13h)"],["Καλησπέρα","kali<b>spe</b>ra","Dobro veče (od ~14h)"],["Καληνύχτα","kali<b>nih</b>ta","Laku noć (samo na rastanku, pred spavanje)"],["Γεια σου","ja su","Zdravo (jednom, neformalno)"],["Γεια σας","ja sas","Zdravo (formalno ili više ljudi)"],["Χαίρετε","<b>he</b>rete","Zdravo (neutralno-formalno)"],["Αντίο","a<b>di</b>o","Zbogom"],["Τα λέμε","ta <b>le</b>me","Vidimo se"],["Καλώς ήρθατε","ka<b>los ir</b>thate","Dobrodošli"],["Ευχαριστώ (πολύ)","efhari<b>sto</b> (po<b>li</b>)","Hvala (mnogo)"],["Παρακαλώ","paraka<b>lo</b>","Molim / izvolite / nema na čemu"],["Συγγνώμη","si<b>gno</b>mi","Izvinite"],["Ναι / Όχι","ne / <b>o</b>hi","<b>Da</b> / Ne"]]},{"tip":"pasus","tekst":"Pažnja: grčko <b>ναι</b> (ne) znači <b>DA</b>. Za \"ne\" se kaže <b>όχι</b>."},{"tip":"podnaslov","tekst":"Lične zamenice (nominativ)"},{"tip":"tabela","zaglavlje":["","<b>Grčki</b>","<b>Izgovor</b>"],"redovi":[["ja","εγώ","e<b>go</b>"],["ti","εσύ","e<b>si</b>"],["on / ona / ono","αυτός / αυτή / αυτό","af<b>tos</b> / af<b>ti</b> / af<b>to</b>"],["mi","εμείς","e<b>mis</b>"],["vi","εσείς","e<b>sis</b>"],["oni / one / ona","αυτοί / αυτές / αυτά","af<b>ti</b> / af<b>tes</b> / af<b>ta</b>"]]},{"tip":"pasus","tekst":"Zamenica se <b>obično izostavlja</b> jer nastavak glagola već pokazuje lice. Koristi se samo za naglasak: <i>Εγώ είμαι από τη Σερβία.</i> = <b>Ja</b> sam iz Srbije."},{"tip":"podnaslov","tekst":"Glagol είμαι = biti (nepravilan, najvažniji)"},{"tip":"tabela","zaglavlje":["<b>Lice</b>","<b>Prezent</b>","<b>Izgovor</b>","<b>Imperfekt (bio sam)</b>"],"redovi":[["ja","είμαι","<b>i</b>me","ήμουν (<b>i</b>mun)"],["ti","είσαι","<b>i</b>se","ήσουν (<b>i</b>sun)"],["on/ona","είναι","<b>i</b>ne","ήταν (<b>i</b>tan)"],["mi","είμαστε","<b>i</b>maste","ήμασταν (<b>i</b>mastan)"],["vi","είστε / είσαστε","<b>i</b>ste","ήσασταν (<b>i</b>sastan)"],["oni","είναι","<b>i</b>ne","ήταν (<b>i</b>tan)"]]},{"tip":"pasus","tekst":"<b>Odričan oblik:</b> čestica <b>δεν</b> ide ispred glagola. <i>Δεν είμαι Έλληνας.</i> (den <b>i</b>me <b>E</b>linas) = Nisam Grk."},{"tip":"pasus","tekst":"<b>Pitanje:</b> isti red reči, samo intonacija + znak <b>;</b> <i>Είσαι από την Ελλάδα;</i> = Jesi li iz Grčke?"},{"tip":"podnaslov","tekst":"Predstavljanje"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Izgovor</b>","<b>Značenje</b>"],"redovi":[["Πώς σε λένε;","pos se <b>le</b>ne","Kako se zoveš?"],["Με λένε Μίλιβοϊ.","me <b>le</b>ne","Zovem se Milivoj."],["Είμαι ο Νίκος.","<b>i</b>me o <b>Ni</b>kos","Ja sam Nikos."],["Από πού είσαι;","apo <b>pu i</b>se","Odakle si?"],["Είμαι από τη Σερβία.","<b>i</b>me apo ti Ser<b>vi</b>a","Iz Srbije sam."],["Τι κάνεις; / Τι κάνετε;","ti <b>ka</b>nis / ti <b>ka</b>nete","Kako si? / Kako ste?"],["Καλά, ευχαριστώ.","ka<b>la</b>","Dobro, hvala."],["Χαίρω πολύ.","<b>he</b>ro po<b>li</b>","Drago mi je."],["Δεν καταλαβαίνω.","den katala<b>ve</b>no","Ne razumem."],["Μιλάτε αγγλικά;","mi<b>la</b>te agli<b>ka</b>","Govorite li engleski?"],["Πιο αργά, παρακαλώ.","pjo ar<b>ga</b>","Sporije, molim."]]},{"tip":"podnaslov","tekst":"Dijalog 1"},{"tip":"pasus","tekst":"— Καλημέρα! Πώς σε λένε; — Με λένε Άννα. Εσύ; — Είμαι ο Γιώργος. Από πού είσαι; — Είμαι από τη Σερβία. Δεν είμαι Ελληνίδα. — Χαίρω πολύ!"},{"tip":"podnaslov","tekst":"Vežba 1"},{"tip":"pasus","tekst":"Prevedi na grčki: (a) Ja sam iz Srbije. (b) Nisi Grk. (c) Kako se zovete? (d) Ne razumem, sporije molim. (e) Oni su dobro."}]},{"vrsta":"lekcija","br":"2","naslov":"Rod imenica i član","blokovi":[{"tip":"pasus","tekst":"Svaka grčka imenica ima <b>rod</b> (muški, ženski, srednji), a član ga pokazuje. <b>Član se uvek uči zajedno sa imenicom</b> — ne uči <i>ψωμί</i>, uči <i>το ψωμί</i>."},{"tip":"podnaslov","tekst":"Određeni član (nominativ jednine)"},{"tip":"tabela","zaglavlje":["<b>Rod</b>","<b>Član</b>","<b>Tipičan nastavak</b>","<b>Primer</b>"],"redovi":[["muški","<b>ο</b> (o)","-ος, -ας, -ης","ο άντρας (o <b>a</b>dras) = muškarac"],["ženski","<b>η</b> (i)","-α, -η","η γυναίκα (i ji<b>ne</b>ka) = žena"],["srednji","<b>το</b> (to)","-ο, -ι, -μα","το παιδί (to pe<b>di</b>) = dete"]]},{"tip":"podnaslov","tekst":"Neodređeni član"},{"tip":"tabela","zaglavlje":["<b>Rod</b>","<b>Član</b>","<b>Primer</b>"],"redovi":[["muški","<b>ένας</b> (<b>e</b>nas)","ένας καφές = jedna kafa"],["ženski","<b>μια / μία</b> (mja)","μια μπίρα = jedno pivo"],["srednji","<b>ένα</b> (<b>e</b>na)","ένα νερό = jedna voda"]]},{"tip":"pasus","tekst":"Neodređeni član = broj \"jedan\". Za množinu ga nema: <i>Θέλω μπίρες.</i> = Hoću piva."},{"tip":"pasus","tekst":"Grčki koristi određeni član <b>mnogo češće</b> nego srpski — i uz vlastita imena i uz opšte pojmove: <i>Ο Γιώργος είναι εδώ.</i> = Đorđe je ovde. <i>Μου αρέσει ο καφές.</i> = Volim kafu."},{"tip":"podnaslov","tekst":"Rečnik: osnovne imenice"},{"tip":"pasus","tekst":"<b>Muški (ο):</b> ο καφές (kafa), ο λογαριασμός (račun), ο δρόμος (ulica), ο φίλος (prijatelj), ο άντρας (muškarac), ο σταθμός (stanica)"},{"tip":"pasus","tekst":"<b>Ženski (η):</b> η μπίρα (pivo), η ζάχαρη (šećer), η πόρτα (vrata), η γυναίκα (žena), η τιμή (cena), η πλατεία (trg)"},{"tip":"pasus","tekst":"<b>Srednji (το):</b> το ψωμί (hleb), το νερό (voda), το γάλα (mleko), το τυρί (sir), το κρασί (vino), το παιδί (dete), το ξενοδοχείο (hotel)"},{"tip":"podnaslov","tekst":"Vežba 2"},{"tip":"pasus","tekst":"Dodaj tačan član: \\_\\_\\_ νερό, \\_\\_\\_ καφές, \\_\\_\\_ μπίρα, \\_\\_\\_ ψωμί, \\_\\_\\_ γυναίκα, \\_\\_\\_ κρασί."}]},{"vrsta":"lekcija","br":"3","naslov":"Akuzativ jednine i glagol ΕΧΩ (imati)","blokovi":[{"tip":"pasus","tekst":"<b>Akuzativ</b> je padež objekta — ono što imaš, hoćeš, kupuješ, jedeš. Posle glagola <i>έχω, θέλω, αγοράζω, τρώω</i> i posle predloga (σε, με, για, από) imenica ide u <b>akuzativ</b>."},{"tip":"podnaslov","tekst":"Promena člana i imenice"},{"tip":"tabela","zaglavlje":["<b>Rod</b>","<b>Nominativ</b>","<b>Akuzativ</b>"],"redovi":[["muški","<b>ο</b> καφές","<b>τον</b> καφέ"],["muški","<b>ο</b> λογαριασμός","<b>τον</b> λογαριασμό"],["ženski","<b>η</b> μπίρα","<b>την</b> μπίρα"],["ženski","<b>η</b> τιμή","<b>την</b> τιμή"],["srednji","<b>το</b> ψωμί","<b>το</b> ψωμί"]]},{"tip":"pasus","tekst":"Pravila: 1. <b>Srednji rod se NE menja</b> (nom. = akuz.). Velika olakšica. 2. <b>Ženski rod:</b> imenica se ne menja, samo član η → <b>την</b>. 3. <b>Muški rod:</b> član ο → <b>τον</b>, a imenica <b>gubi krajnje -ς</b>: καφές → καφέ, φίλος → φίλο."},{"tip":"podnaslov","tekst":"Glagol έχω = imati"},{"tip":"tabela","zaglavlje":["<b>Lice</b>","<b>Grčki</b>","<b>Izgovor</b>"],"redovi":[["imam","έχω","<b>e</b>ho"],["imaš","έχεις","<b>e</b>his"],["ima","έχει","<b>e</b>hi"],["imamo","έχουμε","<b>e</b>hume"],["imate","έχετε","<b>e</b>hete"],["imaju","έχουν","<b>e</b>hun"]]},{"tip":"pasus","tekst":"<i>Έχω έναν φίλο.</i> = Imam jednog prijatelja. <i>Δεν έχω χρόνο.</i> = Nemam vremena. <i>Έχετε ψωμί;</i> = Imate li hleba?"},{"tip":"pasus","tekst":"<b>Neodređeni član u akuzativu:</b> ένας → <b>έναν</b>, μια → <b>μια</b>, ένα → <b>ένα</b>."},{"tip":"podnaslov","tekst":"Bezlično \"ima / nema\" (za postojanje)"},{"tip":"pasus","tekst":"<i>Υπάρχει...;</i> (i<b>par</b>hi) = Ima li...? / Postoji li...? <i>Δεν υπάρχει πρόβλημα.</i> = Nema problema."},{"tip":"podnaslov","tekst":"Vežba 3"},{"tip":"pasus","tekst":"Stavi u akuzativ: (a) Θέλω \\_\\_\\_ (ο καφές). (b) Έχεις \\_\\_\\_ (η τιμή); (c) Πληρώνω \\_\\_\\_ (ο λογαριασμός). (d) Τρώω \\_\\_\\_ (το ψωμί)."}]},{"vrsta":"lekcija","br":"4","naslov":"Glagoli A grupe (prezent)","blokovi":[{"tip":"pasus","tekst":"Grčki glagoli se u prezentu dele u dve grupe prema naglasku."},{"tip":"pasus","tekst":"<b>A grupa</b> — naglasak <b>nije</b> na kraju (npr. <b>μέ</b>νω). To je većina glagola."},{"tip":"podnaslov","tekst":"Obrazac: μένω (živeti, stanovati)"},{"tip":"tabela","zaglavlje":["<b>Lice</b>","<b>Oblik</b>","<b>Nastavak</b>"],"redovi":[["ja","μέν<b>ω</b>","-ω"],["ti","μέν<b>εις</b>","-εις"],["on/ona","μέν<b>ει</b>","-ει"],["mi","μέν<b>ουμε</b>","-ουμε"],["vi","μέν<b>ετε</b>","-ετε"],["oni","μέν<b>ουν</b>","-ουν"]]},{"tip":"pasus","tekst":"Svaki glagol A grupe ide po ovom obrascu. Uči samo osnovu."},{"tip":"podnaslov","tekst":"Ključni glagoli A grupe"},{"tip":"tabela","zaglavlje":["<b>Glagol</b>","<b>Izgovor</b>","<b>Značenje</b>"],"redovi":[["μένω","<b>me</b>no","živeti, stanovati"],["θέλω","<b>the</b>lo","hteti, želeti"],["κάνω","<b>ka</b>no","raditi, činiti"],["ξέρω","<b>kse</b>ro","znati"],["καταλαβαίνω","katala<b>ve</b>no","razumeti"],["αγοράζω","ago<b>ra</b>zo","kupovati"],["πληρώνω","pli<b>ro</b>no","plaćati"],["διαβάζω","dja<b>va</b>zo","čitati"],["γράφω","<b>gra</b>fo","pisati"],["δουλεύω","du<b>le</b>vo","raditi (posao)"],["φεύγω","<b>fev</b>go","odlaziti"],["περιμένω","peri<b>me</b>no","čekati"],["ψάχνω","<b>psah</b>no","tražiti"],["πίνω","<b>pi</b>no","piti"]]},{"tip":"podnaslov","tekst":"Nepravilni, ali neizbežni"},{"tip":"pasus","tekst":"<b>πάω / πηγαίνω</b> (ići): πάω, πας, πάει, πάμε, πάτε, πάνε <b>τρώω</b> (jesti): τρώω, τρως, τρώει, τρώμε, τρώτε, τρώνε <b>λέω</b> (reći): λέω, λες, λέει, λέμε, λέτε, λένε"},{"tip":"podnaslov","tekst":"Rečenice"},{"tip":"pasus","tekst":"<i>Μένω στο Νόβι Σαντ.</i> = Živim u Novom Sadu. <i>Δεν ξέρω.</i> = Ne znam. <i>Τι κάνεις εδώ;</i> = Šta radiš ovde? <i>Πάμε!</i> = Idemo! <i>Θέλω να πληρώσω.</i> = Želim da platim. (o <b>να</b> u lekciji 12)"},{"tip":"podnaslov","tekst":"Vežba 4"},{"tip":"pasus","tekst":"Promeni kroz sva lica: <i>αγοράζω</i>. Prevedi: (a) Ne razumemo. (b) Šta piješ? (c) Oni traže hotel (ξενοδοχείο). (d) Čekam."}]},{"vrsta":"lekcija","br":"5","naslov":"Glagoli B grupe (prezent)","blokovi":[{"tip":"pasus","tekst":"<b>B grupa</b> — naglasak <b>je</b> na kraju: μπο<b>ρώ</b>, μι<b>λώ</b>. Ima dva podtipa."},{"tip":"podnaslov","tekst":"B1: μιλώ (govoriti)"},{"tip":"tabela","zaglavlje":["<b>Lice</b>","<b>Oblik</b>"],"redovi":[["ja","μιλ<b>άω</b> / μιλ<b>ώ</b>"],["ti","μιλ<b>άς</b>"],["on/ona","μιλ<b>άει</b> / μιλ<b>ά</b>"],["mi","μιλ<b>άμε</b>"],["vi","μιλ<b>άτε</b>"],["oni","μιλ<b>άνε</b> / μιλ<b>ούν</b>"]]},{"tip":"pasus","tekst":"Ovako idu: <b>αγαπώ</b> (voleti), <b>ρωτώ</b> (pitati), <b>απαντώ</b> (odgovarati), <b>ζητώ</b> (tražiti/zahtevati), <b>πεινώ</b> (biti gladan), <b>διψώ</b> (biti žedan)."},{"tip":"pasus","tekst":"<i>Πεινάω.</i> = Gladan sam. <i>Διψάω.</i> = Žedan sam. (Grčki kaže \"gladujem\", ne \"gladan sam\".)"},{"tip":"podnaslov","tekst":"B2: μπορώ (moći)"},{"tip":"tabela","zaglavlje":["<b>Lice</b>","<b>Oblik</b>"],"redovi":[["ja","μπορ<b>ώ</b>"],["ti","μπορ<b>είς</b>"],["on/ona","μπορ<b>εί</b>"],["mi","μπορ<b>ούμε</b>"],["vi","μπορ<b>είτε</b>"],["oni","μπορ<b>ούν</b>"]]},{"tip":"pasus","tekst":"Po sličnom obrascu menjaju se i οδηγώ (voziti) i drugi glagoli na -ώ. Glagoli ευχαριστώ i παρακαλώ veoma su česti, ali njihove oblike je najbolje učiti kroz gotove fraze."},{"tip":"pasus","tekst":"<i>Μπορείτε να με βοηθήσετε;</i> = Možete li mi pomoći? <i>Δεν μπορώ.</i> = Ne mogu. <i>Μιλάτε αγγλικά;</i> = Govorite engleski?"},{"tip":"podnaslov","tekst":"Vežba 5"},{"tip":"pasus","tekst":"Prevedi: (a) Žedan sam. (b) Možemo li? (c) Ona ne govori srpski (σέρβικα). (d) Pitam."}]},{"vrsta":"lekcija","br":"6","naslov":"Množina i brojevi","blokovi":[{"tip":"podnaslov","tekst":"Množina imenica (nominativ i akuzativ)"},{"tip":"tabela","zaglavlje":["<b>Rod</b>","<b>Jednina</b>","<b>Množina (nom.)</b>","<b>Množina (akuz.)</b>"],"redovi":[["m\\. -ος","ο φίλος","<b>οι</b> φίλ<b>οι</b>","<b>τους</b> φίλ<b>ους</b>"],["m\\. -ας/-ης","ο άντρας","<b>οι</b> άντρ<b>ες</b>","<b>τους</b> άντρ<b>ες</b>"],["ž. -α/-η","η μπίρα","<b>οι</b> μπίρ<b>ες</b>","<b>τις</b> μπίρ<b>ες</b>"],["s\\. -ο","το κρασί → to je -ι","",""],["s\\. -ι","το ψωμί","<b>τα</b> ψωμ<b>ιά</b>","<b>τα</b> ψωμ<b>ιά</b>"],["s\\. -ο","το βιβλίο","<b>τα</b> βιβλί<b>α</b>","<b>τα</b> βιβλί<b>α</b>"]]},{"tip":"pasus","tekst":"Zapamti članove množine: <b>οι</b> (m.), <b>οι</b> (ž.), <b>τα</b> (s.) u nominativu; <b>τους / τις / τα</b> u akuzativu."},{"tip":"pasus","tekst":"<i>Θέλω δύο μπίρες.</i> = Hoću dva piva. <i>Τα παιδιά είναι εδώ.</i> = Deca su ovde."},{"tip":"podnaslov","tekst":"Brojevi"},{"tip":"tabela","zaglavlje":[],"redovi":[["1","ένα / ένας / μία","<b>e</b>na"],["2","δύο","<b>di</b>o"],["3","τρία","<b>tri</b>a"],["4","τέσσερα","<b>te</b>sera"],["5","πέντε","<b>pe</b>nde"],["6","έξι","<b>e</b>ksi"],["7","εφτά (επτά)","ef<b>ta</b>"],["8","οχτώ (οκτώ)","oh<b>to</b>"],["9","εννιά (εννέα)","e<b>nja</b>"],["10","δέκα","<b>de</b>ka"],["11","έντεκα","<b>e</b>ndeka"],["12","δώδεκα","<b>do</b>deka"],["13","δεκατρία","dekat<b>ri</b>a"],["20","είκοσι","<b>i</b>kosi"],["21","είκοσι ένα",""],["30","τριάντα","tri<b>a</b>nda"],["40","σαράντα","sa<b>ra</b>nda"],["50","πενήντα","pe<b>ni</b>nda"],["60","εξήντα","e<b>ksi</b>nda"],["70","εβδομήντα","evdo<b>mi</b>nda"],["80","ογδόντα","og<b>do</b>nda"],["90","ενενήντα","ene<b>ni</b>nda"],["100","εκατό","eka<b>to</b>"],["200","διακόσια","dja<b>ko</b>sja"],["500","πεντακόσια","penda<b>ko</b>sja"],["1000","χίλια","<b>hi</b>lja"]]},{"tip":"podnaslov","tekst":"Vreme i dani"},{"tip":"pasus","tekst":"<i>Τι ώρα είναι;</i> = Koliko je sati? <i>Είναι τρεις (η ώρα).</i> = Tri je. <i>Στις οχτώ.</i> = U osam."},{"tip":"pasus","tekst":"Dani: Δευτέρα (ponedeljak), Τρίτη, Τετάρτη, Πέμπτη, Παρασκευή, Σάββατο, Κυριακή. <i>σήμερα</i> (danas), <i>αύριο</i> (sutra), <i>χθες</i> (juče), <i>τώρα</i> (sada)."},{"tip":"podnaslov","tekst":"Vežba 6"},{"tip":"pasus","tekst":"Stavi u množinu: ο φίλος, η τιμή, το παιδί. Napiši grčki: 3, 15, 40, 250."}]},{"vrsta":"lekcija","br":"7","naslov":"U prodavnici: hrana, količine, cene","blokovi":[{"tip":"podnaslov","tekst":"Ključne fraze"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Izgovor</b>","<b>Značenje</b>"],"redovi":[["Θα ήθελα...","tha <b>i</b>thela","Želeo bih... (učtivo)"],["Θέλω...","<b>the</b>lo","Hoću..."],["Έχετε...;","<b>e</b>hete","Imate li...?"],["Πόσο κάνει; / Πόσο","<b>po</b>so <b>ka</b>ni","Koliko košta?"],["κοστίζει;","",""],["Πόσο κάνουν όλα;","<b>po</b>so <b>ka</b>nun <b>o</b>la","Koliko je sve ukupno?"],["Είναι ακριβό.","<b>i</b>ne akri<b>vo</b>","Skupo je."],["Είναι φθηνό.","fthi<b>no</b>","Jeftino je."],["Αυτό, παρακαλώ.","af<b>to</b>","Ovo, molim."],["Τίποτα άλλο.","<b>ti</b>pota <b>a</b>lo","Ništa drugo."],["Μόνο αυτό.","<b>mo</b>no af<b>to</b>","Samo to."],["Μια σακούλα, παρακαλώ.","mja sa<b>ku</b>la","Kesu, molim."],["Με κάρτα ή με μετρητά;","","Karticom ili gotovinom?"],["Απόδειξη, παρακαλώ.","a<b>po</b>diksi","Račun (fiskalni), molim."]]},{"tip":"podnaslov","tekst":"Količine"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>"],"redovi":[["ένα κιλό","jedan kilogram"],["μισό κιλό","pola kilograma"],["ένα τέταρτο","četvrt kile"],["εκατό γραμμάρια","100 grama"],["ένα μπουκάλι","flaša"],["ένα κουτί","kutija / konzerva"],["ένα πακέτο","paket"],["μια φέτα","kriška"],["λίγο / πολύ","malo / mnogo"],["ακόμα ένα","još jedan"]]},{"tip":"podnaslov","tekst":"Rečnik: hrana i piće"},{"tip":"pasus","tekst":"<b>Osnovno:</b> το ψωμί (hleb), το γάλα (mleko), το νερό (voda), το τυρί (sir), το βούτυρο (puter), το αυγό / τα αυγά (jaje/jaja), το ρύζι (pirinač), τα ζυμαρικά (testenina), η ζάχαρη (šećer), το αλάτι (so), το πιπέρι (biber), το λάδι (ulje), το ξύδι (sirće), το μέλι (med), η μαρμελάδα (džem), το γιαούρτι (jogurt)"},{"tip":"pasus","tekst":"<b>Meso i riba:</b> το κρέας (meso), το κοτόπουλο (piletina), το χοιρινό (svinjetina), το μοσχάρι (junetina), το αρνί (jagnjetina), το ψάρι (riba), τα θαλασσινά (plodovi mora), το ζαμπόν (šunka), το λουκάνικο (kobasica)"},{"tip":"pasus","tekst":"<b>Povrće (τα λαχανικά):</b> η ντομάτα (paradajz), το αγγούρι (krastavac), η πατάτα (krompir), το κρεμμύδι (crni luk), το σκόρδο (beli luk), η πιπεριά (paprika), το μαρούλι (zelena salata), η μελιτζάνα (plavi patlidžan), το καρότο (šargarepa), τα φασόλια (pasulj)"},{"tip":"pasus","tekst":"<b>Voće (τα φρούτα):</b> το μήλο (jabuka), η μπανάνα (banana), το πορτοκάλι (pomorandža), το λεμόνι (limun), το σταφύλι (grožđe), το καρπούζι (lubenica), το ροδάκινο (breskva), η φράουλα (jagoda), το αχλάδι (kruška), το κεράσι (trešnja)"},{"tip":"pasus","tekst":"Piće: ο καφές (kafa), ο ελληνικός καφές (grčka kafa), το τσάι (čaj), ο χυμός (sok), η μπίρα (pivo), το κρασί (vino) — κόκκινο/λευκό (crveno/belo), το ούζο, το τσίπουρο, το εμφιαλωμένο νερό (flaširana voda)"},{"tip":"pasus","tekst":"Ostalo: τα γλυκά (slatkiši), το παγωτό (sladoled), οι ελιές (masline), η φέτα (feta sir), η τυρόπιτα (pita sa sirom)"},{"tip":"pasus","tekst":"<b>Prodavnice:</b> το σούπερ μάρκετ, ο φούρνος (pekara), το κρεοπωλείο (mesara), το μανάβικο (piljarnica), το φαρμακείο (apoteka), το περίπτερο (kiosk), η λαϊκή αγορά (pijaca)"},{"tip":"podnaslov","tekst":"Dijalog 7 — U piljarnici"},{"tip":"pasus","tekst":"— Καλημέρα σας! Ορίστε; (o<b>ri</b>ste = Izvolite?) — Καλημέρα. Θα ήθελα ένα κιλό ντομάτες και μισό κιλό αγγούρια. — Μάλιστα. Τίποτα άλλο; — Ναι, έχετε φράουλες; — Βεβαίως. Πόσες θέλετε; — Ένα τέταρτο, παρακαλώ. Πόσο κάνουν όλα; — Επτά ευρώ και πενήντα λεπτά. — Ορίστε. Μια σακούλα, παρακαλώ. — Ευχαριστώ πολύ. Καλή σας μέρα!"},{"tip":"podnaslov","tekst":"Vežba 7"},{"tip":"pasus","tekst":"Sastavi dijalog u pekari: tražiš dva hleba i jednu pitu sa sirom, pitaš cenu, plaćaš karticom."}]},{"vrsta":"lekcija","br":"8","naslov":"Pridevi i opisivanje","blokovi":[{"tip":"pasus","tekst":"Pridev se <b>slaže</b> sa imenicom u rodu, broju i padežu. Obrazac -ος / -η / -ο."},{"tip":"tabela","zaglavlje":["","<b>Muški</b>","<b>Ženski</b>","<b>Srednji</b>"],"redovi":[["Nom. jd.","καλ<b>ός</b>","καλ<b>ή</b>","καλ<b>ό</b>"],["Akuz. jd.","καλ<b>ό</b>","καλ<b>ή</b>","καλ<b>ό</b>"],["Nom. mn.","καλ<b>οί</b>","καλ<b>ές</b>","καλ<b>ά</b>"],["Akuz. mn.","καλ<b>ούς</b>","καλ<b>ές</b>","καλ<b>ά</b>"]]},{"tip":"pasus","tekst":"<i>ο καλός καφές</i> — <i>η καλή μπίρα</i> — <i>το καλό κρασί</i>"},{"tip":"podnaslov","tekst":"Osnovni pridevi (parovi)"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>"],"redovi":[["καλός / κακός","dobar / loš"],["μεγάλος / μικρός","velik / mali"],["καινούριος / παλιός","nov / star"],["ακριβός / φθηνός","skup / jeftin"],["ζεστός / κρύος","topao / hladan"],["ωραίος","lep"],["πολύς / λίγος","mnogo / malo"],["φρέσκος","svež"],["νόστιμος","ukusan"],["ανοιχτό / κλειστό","otvoreno / zatvoreno"]]},{"tip":"podnaslov","tekst":"Boje"},{"tip":"pasus","tekst":"άσπρο (belo), μαύρο (crno), κόκκινο (crveno), μπλε (plavo), πράσινο (zeleno), κίτρινο (žuto), καφέ (braon), γκρι (sivo) Napomena: μπλε, καφέ, γκρι, ροζ se <b>ne menjaju</b>."},{"tip":"pasus","tekst":"<i>Θέλω ένα κόκκινο κρασί.</i> = Hoću crveno vino. <i>Είναι πολύ ακριβό.</i> = Vrlo je skupo."},{"tip":"podnaslov","tekst":"Vežba 8"},{"tip":"pasus","tekst":"Slaži pridev: ένα (μεγάλος) ψωμί, μια (κρύος) μπίρα, ο (καλός) καφές, δύο (φρέσκος) ντομάτες."}]},{"vrsta":"lekcija","br":"9","naslov":"Genitiv i prisvojne zamenice","blokovi":[{"tip":"pasus","tekst":"<b>Genitiv</b> izražava pripadanje (čiji?) i dolazi <b>posle</b> imenice."},{"tip":"podnaslov","tekst":"Član u genitivu jednine"},{"tip":"tabela","zaglavlje":["<b>Rod</b>","<b>Nom.</b>","<b>Gen.</b>"],"redovi":[["m\\.","ο φίλος","<b>του</b> φίλ<b>ου</b>"],["ž.","η γυναίκα","<b>της</b> γυναίκ<b>ας</b>"],["s\\.","το παιδί","<b>του</b> παιδ<b>ιού</b>"]]},{"tip":"pasus","tekst":"<i>το σπίτι <b>του φίλου</b></i> = kuća prijatelja <i>η τιμή <b>του κρασιού</b></i> = cena vina"},{"tip":"podnaslov","tekst":"Prisvojne zamenice (nenaglašene — najvažnije)"},{"tip":"tabela","zaglavlje":["","<b>Grčki</b>","<b>Izgovor</b>"],"redovi":[["moj","μου","mu"],["tvoj","σου","su"],["njegov","του","tu"],["njen","της","tis"],["naš","μας","mas"],["vaš","σας","sas"],["njihov","τους","tus"]]},{"tip":"pasus","tekst":"Idu <b>iza</b> imenice, koja zadržava član: <i>το όνομά <b>μου</b></i> = moje ime <i>ο φίλος <b>μου</b></i> = moj prijatelj <i>το διαβατήριό <b>μου</b></i> = moj pasoš <i>η γυναίκα <b>του</b></i> = njegova žena"},{"tip":"pasus","tekst":"Imenica dobija <b>drugi naglasak</b> ako je naglašena na 3. slogu od kraja: το <b>ό</b>νομα → το <b>ό</b>νο<b>μά</b> μου."},{"tip":"podnaslov","tekst":"Porodica"},{"tip":"pasus","tekst":"ο πατέρας (otac), η μητέρα (majka), ο αδελφός (brat), η αδελφή (sestra), ο γιος (sin), η κόρη (ćerka), ο άντρας (muž), η γυναίκα (žena), τα παιδιά (deca), οι γονείς (roditelji), ο παππούς / η γιαγιά (deda/baka)"},{"tip":"podnaslov","tekst":"Vežba 9"},{"tip":"pasus","tekst":"Prevedi: (a) moj pasoš, (b) njena kuća, (c) cena hotela, (d) naša deca, (e) ime tvog prijatelja."}]},{"vrsta":"lekcija","br":"10","naslov":"Predlozi, mesto, snalaženje","blokovi":[{"tip":"podnaslov","tekst":"Predlog σε (u, na, kod) — spaja se sa članom!"},{"tip":"tabela","zaglavlje":["<b>σε +</b>","<b>=</b>","<b>Primer</b>"],"redovi":[["σε + τον","<b>στον</b>","στον δρόμο (na ulici)"],["σε + την","<b>στην</b>","στην Αθήνα (u Atini)"],["σε + το","<b>στο</b>","στο ξενοδοχείο (u hotelu)"],["σε + τους","<b>στους</b>",""],["σε + τις","<b>στις</b>","στις οχτώ (u osam)"],["σε + τα","<b>στα</b>",""]]},{"tip":"pasus","tekst":"<i>Μένω στο ξενοδοχείο.</i> = Odseo sam u hotelu. <i>Πάω στην παραλία.</i> = Idem na plažu."},{"tip":"podnaslov","tekst":"Ostali predlozi (svi traže akuzativ)"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>","<b>Primer</b>"],"redovi":[["από","iz, od","από την Ελλάδα"],["με","sa, pomoću","με κάρτα (karticom)"],["για","za","για μένα (za mene)"],["χωρίς","bez","χωρίς ζάχαρη (bez šećera)"],["μέχρι","do","μέχρι τις πέντε"]]},{"tip":"podnaslov","tekst":"Prilozi za mesto"},{"tip":"pasus","tekst":"εδώ (ovde), εκεί (tamo), δεξιά (desno), αριστερά (levo), ευθεία (pravo), κοντά (blizu), μακριά (daleko), πάνω (gore), κάτω (dole), μέσα (unutra), έξω (napolju), δίπλα (pored), απέναντι (preko puta), πίσω (iza), μπροστά (ispred)"},{"tip":"podnaslov","tekst":"Snalaženje"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>"],"redovi":[["Πού είναι...;","Gde je...?"],["Συγγνώμη, πώς πάω στο κέντρο;","Izvinite, kako da stignem do centra?"],["Είναι μακριά;","Je li daleko?"],["Πηγαίνετε ευθεία και μετά δεξιά.","Idite pravo pa desno."],["Στη γωνία.","Na uglu."],["Χάθηκα.","Izgubio sam se."],["Πού είναι η τουαλέτα;","Gde je toalet?"]]},{"tip":"pasus","tekst":"<b>Mesta:</b> το κέντρο, ο σταθμός (stanica), το αεροδρόμιο (aerodrom), η στάση (stajalište), το λιμάνι (luka), η παραλία (plaža), η τράπεζα (banka), το νοσοκομείο (bolnica), η αστυνομία (policija), το μουσείο, η εκκλησία (crkva), το εστιατόριο, η ταβέρνα"},{"tip":"podnaslov","tekst":"Vežba 10"},{"tip":"pasus","tekst":"Prevedi: (a) Idem u hotel. (b) Gde je stanica? (c) Kafa bez šećera. (d) Plaža je daleko. (e) Iz Srbije sam, u Atini sam."}]},{"vrsta":"lekcija","br":"11","naslov":"Prošlo vreme: aorist i najčešći oblici imperfekta","blokovi":[{"tip":"pasus","tekst":"Aorist se koristi za završenu, celovitu radnju u prošlosti: „kupio sam\", „platio sam\", „otišao sam\". Za stanje ili radnju koja je trajala često se koristi imperfekat: „bio sam\", „imao sam\", „hteo sam\", „znao sam\"."},{"tip":"podnaslov","tekst":"Tri pravila"},{"tip":"lista","stavke":["Naglasak ide na <b>treći slog od kraja</b>.","Osnova se menja (naučiti napamet za svaki glagol).","Jednosložne/dvosložne osnove dobijaju <b>ε-</b> na početku (augment): γράφω → <b>έ</b>γραψα."]},{"tip":"podnaslov","tekst":"Nastavci aorista"},{"tip":"pasus","tekst":"-α, -ες, -ε, -αμε, -ατε, -αν"},{"tip":"tabela","zaglavlje":["<b>Lice</b>","<b>αγοράζω → αγόρασ-</b>"],"redovi":[["ja","αγόρασ<b>α</b> (kupio sam)"],["ti","αγόρασ<b>ες</b>"],["on/ona","αγόρασ<b>ε</b>"],["mi","αγοράσ<b>αμε</b>"],["vi","αγοράσ<b>ατε</b>"],["oni","αγόρασ<b>αν</b>"]]},{"tip":"podnaslov","tekst":"Najvažniji oblici prošlog vremena"},{"tip":"tabela","zaglavlje":["<b>Prezent</b>","<b>Prošlo vreme (ja)</b>","<b>Značenje</b>"],"redovi":[["είμαι","ήμουν","bio sam"],["έχω","είχα","imao sam"],["αγοράζω","αγόρασα","kupio sam"],["πληρώνω","πλήρωσα","platio sam"],["θέλω","ήθελα","hteo sam"],["κάνω","έκανα","uradio sam"],["πάω","πήγα","otišao sam"],["τρώω","έφαγα","jeo sam"],["πίνω","ήπια","pio sam"],["λέω","είπα","rekao sam"],["βλέπω","είδα","video sam"],["παίρνω","πήρα","uzeo sam"],["δίνω","έδωσα","dao sam"],["μένω","έμεινα","ostao sam"],["μπορώ","μπόρεσα","mogao sam"],["μιλώ","μίλησα","govorio sam"],["ξέρω","ήξερα","znao sam"],["χάνω","έχασα","izgubio sam"]]},{"tip":"podnaslov","tekst":"Odricanje: <b>δεν</b> + aorist"},{"tip":"pasus","tekst":"<i>Δεν πλήρωσα.</i> = Nisam platio. <i>Χθες πήγα στην παραλία.</i> = Juče sam išao na plažu. <i>Έχασα το διαβατήριό μου.</i> = Izgubio sam pasoš."},{"tip":"podnaslov","tekst":"Vežba 11"},{"tip":"pasus","tekst":"Prevedi: (a) Juče sam kupio hleb. (b) Nismo platili. (c) Šta si rekao? (d) Video sam Nikosa."}]},{"vrsta":"lekcija","br":"12","naslov":"Buduće vreme i konjunktiv (να)","blokovi":[{"tip":"pasus","tekst":"Grčki nema infinitiv. Umesto \"hoću <b>da idem</b>\" kaže se \"hoću da <b>idem-ja</b>\" — glagol se menja po licu i posle <b>να</b>."},{"tip":"podnaslov","tekst":"Konjunktiv sa να"},{"tip":"pasus","tekst":"Oblik posle <b>να</b> = isti kao aorist, ali sa nastavcima prezenta: <i>αγοράσω, αγοράσεις, αγοράσει, αγοράσουμε, αγοράσετε, αγοράσουν</i>"},{"tip":"tabela","zaglavlje":["<b>Konstrukcija</b>","<b>Primer</b>","<b>Značenje</b>"],"redovi":[["θέλω να + glagol","Θέλω να <b>πληρώσω</b>.","Hoću da platim."],["μπορώ να + glagol","Μπορώ να <b>δω</b>;","Mogu li da vidim?"],["πρέπει να + glagol","Πρέπει να <b>φύγω</b>.","Moram da idem."],["Μπορείτε να με","","Možete li mi pomoći?"],["βοηθήσετε;","",""],["Τι θέλετε να πιείτε;","","Šta želite da pijete?"]]},{"tip":"podnaslov","tekst":"Buduće vreme: <b>θα</b> + konjunktiv"},{"tip":"pasus","tekst":"Jednostavno: čestica <b>θα</b> ispred glagola."},{"tip":"pasus","tekst":"<i>Θα πάω αύριο.</i> (tha <b>pa</b>o <b>av</b>rio) = Ići ću sutra. <i>Θα πληρώσω με κάρτα.</i> = Platiću karticom. <i>Θα πάρω έναν καφέ.</i> = Uzeću kafu. <i>Δεν θα έρθω.</i> = Neću doći."},{"tip":"pasus","tekst":"Trajni ili nesvršeni futur: θα + prezent, kada se naglašava trajanje ili ponavljanje. Θα μένω εδώ για έναν μήνα. = Boraviću ovde mesec dana."},{"tip":"podnaslov","tekst":"Učtivi kondicional"},{"tip":"pasus","tekst":"Θα ήθελα... = Želeo bih... — najbezbedniji učtivi oblik u prodavnici, kafiću, restoranu i hotelu."},{"tip":"podnaslov","tekst":"Imperativ (osnovno)"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>"],"redovi":[["Έλα! / Ελάτε!","Dođi! / Dođite!"],["Πάμε!","Idemo!"],["Περίμενε! / Περιμένετε!","Čekaj! / Čekajte!"],["Πες μου.","Reci mi."],["Μη!","Nemoj!"]]},{"tip":"podnaslov","tekst":"Vežba 12"},{"tip":"pasus","tekst":"Prevedi: (a) Želeo bih jedno pivo. (b) Moram da idem. (c) Sutra ću ići u Atinu. (d) Možete li mi pomoći?"}]},{"vrsta":"lekcija","br":"13","naslov":"Restoran, hotel, hitni slučajevi","blokovi":[{"tip":"podnaslov","tekst":"Restoran / taverna"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>"],"redovi":[["Ένα τραπέζι για δύο, παρακαλώ.","Sto za dvoje, molim."],["Τον κατάλογο, παρακαλώ.","Jelovnik, molim."],["Τι μας προτείνετε;","Šta nam preporučujete?"],["Θα ήθελα...","Želeo bih..."],["Είμαι χορτοφάγος.","Vegetarijanac sam."],["Έχω αλλεργία σε...","Alergičan sam na..."],["Χωρίς κρέας / χωρίς γλουτένη.","Bez mesa / bez glutena."],["Λίγο νερό ακόμα, παρακαλώ.","Još malo vode, molim."],["Ήταν πολύ νόστιμο!","Bilo je vrlo ukusno!"],["Το λογαριασμό, παρακαλώ.","Račun, molim."],["Στην υγειά μας!","Živeli!"],["Καλή όρεξη!","Prijatno!"]]},{"tip":"pasus","tekst":"<b>Meni:</b> τα ορεκτικά (predjela), η σαλάτα, η σούπα, το κυρίως πιάτο (glavno jelo), τα ψητά (roštilj), το επιδόρπιο (desert), τα ποτά (pića)"},{"tip":"podnaslov","tekst":"Sviđanje: μου αρέσει"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>"],"redovi":[["Μου αρέσει ο καφές.","Volim kafu. (jednina)"],["Μου αρέσουν οι ελιές.","Volim masline. (množina)"],["Δεν μου αρέσει.","Ne sviđa mi se."],["Σ' αρέσει;","Sviđa li ti se?"]]},{"tip":"pasus","tekst":"Doslovno: \"meni se sviđa kafa\" — <b>subjekat je stvar</b>, ne osoba. Zato μου αρέσ<b>ουν</b> kad je stvari više."},{"tip":"podnaslov","tekst":"Hotel"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>"],"redovi":[["Έχω κράτηση.","Imam rezervaciju."],["Έχετε δωμάτιο;","Imate li sobu?"],["Για δύο νύχτες.","Za dve noći."],["Το κλειδί, παρακαλώ.","Ključ, molim."],["Το wi-fi δεν δουλεύει.","Vaj-faj ne radi."],["Τι ώρα είναι το πρωινό;","U koliko je doručak?"]]},{"tip":"podnaslov","tekst":"Hitni slučajevi (naučiti napamet)"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Izgovor</b>","<b>Značenje</b>"],"redovi":[["<b>Βοήθεια!</b>","vo<b>i</b>thja","Upomoć!"],["Καλέστε ασθενοφόρο!","ka<b>le</b>ste asthe<b>no</b>foro","Zovite hitnu pomoć!"],["Καλέστε την αστυνομία!","","Zovite policiju!"],["Είμαι άρρωστος /","","Bolestan/bolesna sam."],["άρρωστη.","",""],["Πονάει εδώ.","po<b>na</b>i e<b>do</b>","Boli ovde."],["Έχω αλλεργία.","","Imam alergiju."],["Έχασα το διαβατήριό","","Izgubio sam pasoš."],["μου.","",""],["Πού είναι το φαρμακείο;","","Gde je apoteka?"]]},{"tip":"pasus","tekst":"Jedinstveni evropski broj za hitne slučajeve u Grčkoj je 112. Kada možeš, reci gde se nalaziš, šta se dogodilo i koliko osoba treba pomoć."},{"tip":"podnaslov","tekst":"Vežba 13"},{"tip":"pasus","tekst":"Sastavi razgovor u taverni: tražiš sto za troje, jelovnik, poručuješ salatu i vino, tražiš račun."}]},{"vrsta":"lekcija","br":"14","naslov":"Ponavljanje i sinteza","blokovi":[{"tip":"podnaslov","tekst":"Kontrolna lista — znam li ovo?"},{"tip":"lista","stavke":["[ ] Pročitam grčku reč naglas iz pisanog oblika","[ ] είμαι i έχω u prezentu i prošlom vremenu","[ ] Prepoznam rod imenice po članu i nastavku","[ ] Napravim akuzativ jednine (τον καφέ, την μπίρα, το ψωμί)","[ ] Menjam glagol A grupe (μένω) i B grupe (μπορώ)","[ ] Napravim množinu (οι φίλοι, οι μπίρες, τα παιδιά)","[ ] Brojim do 100, kažem cenu i vreme","[ ] Kupim hranu, pitam cenu, platim","[ ] Slažem pridev sa imenicom","[ ] Kažem \"moj/tvoj\" (ο φίλος μου)","[ ] Koristim στο / στη / στον","[ ] Kažem šta sam juče uradio (aorist)","[ ] Kažem šta ću sutra (θα) i \"hoću da...\" (θέλω να)","[ ] Zovem pomoć"]},{"tip":"podnaslov","tekst":"40 rečenica koje pokrivaju 80% turističkih situacija"},{"tip":"lista","stavke":["Καλημέρα σας. — Dobar dan.","Μιλάτε αγγλικά; — Govorite engleski?","Δεν καταλαβαίνω. — Ne razumem.","Πιο αργά, παρακαλώ. — Sporije, molim.","Πώς το λένε αυτό στα ελληνικά; — Kako se ovo kaže na grčkom?","Είμαι από τη Σερβία. — Iz Srbije sam.","Με λένε... — Zovem se...","Πόσο κάνει; — Koliko košta?","Είναι πολύ ακριβό. — Vrlo je skupo.","Θα ήθελα ένα κιλό ντομάτες. — Želeo bih kilo paradajza.","Έχετε ψωμί; — Imate li hleba?","Μόνο αυτό, ευχαριστώ. — Samo to, hvala.","Μια σακούλα, παρακαλώ. — Kesu, molim.","Θα πληρώσω με κάρτα. — Platiću karticom.","Απόδειξη, παρακαλώ. — Račun, molim.","Πού είναι η τουαλέτα; — Gde je toalet?","Πού είναι ο σταθμός; — Gde je stanica?","Είναι μακριά; — Je li daleko?","Πηγαίνετε ευθεία. — Idite pravo.","Χάθηκα. — Izgubio sam se.","Ένα τραπέζι για δύο. — Sto za dvoje.","Τον κατάλογο, παρακαλώ. — Jelovnik, molim.","Τι μας προτείνετε; — Šta preporučujete?","Μου αρέσει πολύ. — Vrlo mi se sviđa.","Δεν μου αρέσει. — Ne sviđa mi se.","Ένα νερό χωρίς ανθρακικό. — Negaziranu vodu.","Έναν καφέ χωρίς ζάχαρη. — Kafu bez šećera.","Το λογαριασμό, παρακαλώ. — Račun, molim.","Ήταν πολύ νόστιμο. — Bilo je ukusno.","Έχω κράτηση. — Imam rezervaciju.","Για τρεις νύχτες. — Za tri noći.","Τι ώρα είναι; — Koliko je sati?","Πάμε στην παραλία. — Idemo na plažu.","Θα πάω αύριο. — Ići ću sutra.","Πρέπει να φύγω. — Moram da idem.","Μπορείτε να με βοηθήσετε; — Možete li mi pomoći?","Δεν έχω χρόνο. — Nemam vremena.","Είμαι άρρωστος. — Bolestan sam.","Βοήθεια! — Upomoć!","Ευχαριστώ πολύ, γεια σας! — Hvala mnogo, doviđenja!"]},{"tip":"podnaslov","tekst":"Kako dalje"},{"tip":"lista","stavke":["Ponavljaj rečnik razmaknutim ponavljanjem (Anki, ~15 min dnevno).","Slušaj kratak, spor grčki sadržaj 10 minuta dnevno. Prvo prepoznaj poznate reči, zatim ponovi jednu ili dve rečenice naglas.","Čitaj natpise na ulici i etikete u prodavnici — to je najbolji A1 materijal.","Sledeći korak (A2): sistematska upotreba imperfekta, više oblika zamenica, poređenje prideva, prošireni rečnik i složenije zavisne rečenice."]}]},{"vrsta":"odeljak","br":"","naslov":"DODATAK — Najkorisnije praktične situacije","blokovi":[{"tip":"pasus","tekst":"Ovaj dodatak proširuje kurs situacijama koje se često javljaju na putovanju, a nisu dovoljno obuhvaćene osnovnim lekcijama. Rečenice uči kao gotove obrasce."},{"tip":"podnaslov","tekst":"1. Prevoz: autobus, taksi i karta"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>"],"redovi":[["Πού είναι η στάση του λεωφορείου;","Gde je autobusko stajalište?"],["Ποιο λεωφορείο πάει στο κέντρο;","Koji autobus ide do centra?"],["Ένα εισιτήριο, παρακαλώ.","Jednu kartu, molim."],["Πού κατεβαίνω για την παραλία;","Gde izlazim za plažu?"],["Μπορείτε να με πάτε σε αυτή τη","Možete li me odvesti na ovu adresu?"],["διεύθυνση;",""],["Πόσο περίπου θα κοστίσει;","Koliko će približno koštati?"],["Σταματήστε εδώ, παρακαλώ.","Stanite ovde, molim."]]},{"tip":"podnaslov","tekst":"2. Hotel i problemi u smeštaju"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>"],"redovi":[["Η κράτηση είναι στο όνομα","Rezervacija je na ime Kalafatić."],["Καλαφάτιτς.",""],["Το δωμάτιο δεν είναι έτοιμο.","Soba nije spremna."],["Δεν έχει ζεστό νερό.","Nema tople vode."],["Το κλιματιστικό δεν δουλεύει.","Klima-uređaj ne radi."],["Μπορείτε να το ελέγξετε;","Možete li to proveriti?"],["Χρειάζομαι άλλη πετσέτα.","Treba mi još jedan peškir."],["Μπορούμε να αλλάξουμε δωμάτιο;","Možemo li promeniti sobu?"]]},{"tip":"podnaslov","tekst":"3. Plaža i svakodnevne potrebe"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>"],"redovi":[["Είναι ελεύθερες αυτές οι","Da li su ove ležaljke slobodne?"],["ξαπλώστρες;",""],["Πόσο κοστίζουν οι ξαπλώστρες;","Koliko koštaju ležaljke?"],["Έχετε ομπρέλα;","Imate li suncobran?"],["Η θάλασσα είναι βαθιά εδώ;","Da li je more ovde duboko?"],["Πού έχει ντους;","Gde ima tuš?"],["Ένα μπουκάλι κρύο νερό, παρακαλώ.","Jednu flašu hladne vode, molim."]]},{"tip":"podnaslov","tekst":"4. Apoteka i zdravstveni problem"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>"],"redovi":[["Χρειάζομαι κάτι για τον πόνο.","Treba mi nešto protiv bolova."],["Έχω πυρετό.","Imam temperaturu."],["Με πονάει το στομάχι.","Boli me stomak."],["Έχω αλλεργία στην πενικιλίνη.","Alergičan sam na penicilin."],["Πόσες φορές την ημέρα;","Koliko puta dnevno?"],["Χρειάζομαι γιατρό.","Potreban mi je lekar."],["Μιλάει ο γιατρός αγγλικά;","Govori li lekar engleski?"]]},{"tip":"podnaslov","tekst":"5. Kada ne razumeš"},{"tip":"tabela","zaglavlje":["<b>Grčki</b>","<b>Značenje</b>"],"redovi":[["Μπορείτε να το επαναλάβετε;","Možete li ponoviti?"],["Μπορείτε να το γράψετε;","Možete li to napisati?"],["Τι σημαίνει αυτό;","Šta ovo znači?"],["Δεν μιλάω καλά ελληνικά.","Ne govorim dobro grčki."],["Καταλαβαίνω λίγο.","Razumem malo."],["Ένα λεπτό, παρακαλώ.","Trenutak, molim."]]},{"tip":"podnaslov","tekst":"Mini-dijalog — problem u hotelu"},{"tip":"pasus","tekst":"— Καλησπέρα. Το κλιματιστικό στο δωμάτιό μου δεν δουλεύει.\\ — Ποιος είναι ο αριθμός του δωματίου;\\ — Το διακόσια δώδεκα. Μπορείτε να το ελέγξετε;\\ — Βεβαίως. Θα έρθει κάποιος σε λίγα λεπτά.\\ — Ευχαριστώ πολύ."},{"tip":"pasus","tekst":"Prevod: — Dobro veče. Klima-uređaj u mojoj sobi ne radi. — Koji je broj sobe? — Dvesta dvanaest. Možete li proveriti? — Naravno. Neko će doći za nekoliko minuta. — Hvala mnogo."}]},{"vrsta":"odeljak","br":"","naslov":"PLAN RADA — 14 dana","blokovi":[{"tip":"tabela","zaglavlje":["<b>Dan</b>","<b>Sadržaj</b>","<b>Praktični cilj</b>"],"redovi":[["1","Lekcija 0","Čitanje slova, grupa glasova i 10 poznatih reči"],["2","Lekcije 1--2","Pozdravljanje, predstavljanje, rod i član"],["3","Lekcija 3","Traženje i kupovina jednostavnih stvari"],["4","Lekcija 4","Osnovni glagoli u prezentu"],["5","Lekcija 5","Moći, govoriti, pitati, glad i žeđ"],["6","Lekcija 6","Brojevi, količine, vreme i dani"],["7","Lekcija 7","Kupovina hrane i plaćanje"],["8","Lekcija 8","Opisivanje proizvoda, hrane i mesta"],["9","Lekcija 9","Porodica, pripadanje i lične stvari"],["10","Lekcija 10","Snalaženje i traženje pravca"],["11","Lekcija 11","Šta se dogodilo juče"],["12","Lekcija 12","Planovi, želje i učtivi zahtevi"],["13","Lekcija 13 + dodatak","Restoran, hotel, apoteka i prevoz"],["14","Lekcija 14","Ponavljanje, simulacija razgovora i samoprovera"]]},{"tip":"pasus","tekst":"Preporučeni dnevni raspored: 10 min ponavljanje prethodnog dana; 15 min nova gramatika; 15 min rečnik i glasno čitanje; 10--15 min dijalog i vežba bez gledanja u rešenja."},{"tip":"pasus","tekst":"Model-rešenje Vežbe 0: καλημέρα (kaliméra), ευχαριστώ (efharistó), ναι (ne), όχι (óhi), μπίρα (bíra), ψωμί (psomí), νερό (neró), είναι (íne), αυτό (aftó), τσάι (cái)."},{"tip":"pasus","tekst":"Model-rešenje Vežbe 7: — Καλημέρα. Θα ήθελα δύο ψωμιά και μία τυρόπιτα, παρακαλώ. — Βεβαίως. Τίποτα άλλο; — Όχι, ευχαριστώ. Πόσο κάνουν; — Έξι ευρώ. — Θα πληρώσω με κάρτα."},{"tip":"pasus","tekst":"Model-rešenje Vežbe 13: — Καλησπέρα. Ένα τραπέζι για τρεις, παρακαλώ. — Βεβαίως. — Τον κατάλογο, παρακαλώ. Θα θέλαμε μία σαλάτα και ένα μπουκάλι κρασί. — Μάλιστα. — Το λογαριασμό, παρακαλώ."}]},{"vrsta":"odeljak","br":"","naslov":"REŠENJA VEŽBI","blokovi":[{"tip":"pasus","tekst":"<b>Vežba 1:</b> (a) Είμαι από τη Σερβία. (b) Δεν είσαι Έλληνας. (c) Πώς σας λένε; (d) Δεν καταλαβαίνω, πιο αργά παρακαλώ. (e) Αυτοί είναι καλά."},{"tip":"pasus","tekst":"<b>Vežba 2:</b> το νερό, ο καφές, η μπίρα, το ψωμί, η γυναίκα, το κρασί."},{"tip":"pasus","tekst":"<b>Vežba 3:</b> (a) τον καφέ (b) την τιμή (c) τον λογαριασμό (d) το ψωμί."},{"tip":"pasus","tekst":"<b>Vežba 4:</b> αγοράζω, αγοράζεις, αγοράζει, αγοράζουμε, αγοράζετε, αγοράζουν. (a) Δεν καταλαβαίνουμε. (b) Τι πίνεις; (c) Ψάχνουν ένα ξενοδοχείο. (d) Περιμένω."},{"tip":"pasus","tekst":"<b>Vežba 5:</b> (a) Διψάω. (b) Μπορούμε; (c) Δεν μιλάει σέρβικα. (d) Ρωτάω."},{"tip":"pasus","tekst":"<b>Vežba 6:</b> οι φίλοι, οι τιμές, τα παιδιά. — τρία, δεκαπέντε, σαράντα, διακόσια πενήντα."},{"tip":"pasus","tekst":"<b>Vežba 8:</b> ένα μεγάλο ψωμί, μια κρύα μπίρα, ο καλός καφές, δύο φρέσκες ντομάτες."},{"tip":"pasus","tekst":"<b>Vežba 9:</b> (a) το διαβατήριό μου (b) το σπίτι της (c) η τιμή του ξενοδοχείου (d) τα παιδιά μας (e) το όνομα του φίλου σου."},{"tip":"pasus","tekst":"<b>Vežba 10:</b> (a) Πάω στο ξενοδοχείο. (b) Πού είναι ο σταθμός; (c) Καφές χωρίς ζάχαρη. (d) Η παραλία είναι μακριά. (e) Είμαι από τη Σερβία, είμαι στην Αθήνα."},{"tip":"pasus","tekst":"<b>Vežba 11:</b> (a) Χθες αγόρασα ψωμί. (b) Δεν πληρώσαμε. (c) Τι είπες; (d) Είδα τον Νίκο."},{"tip":"pasus","tekst":"<b>Vežba 12:</b> (a) Θα ήθελα μια μπίρα. (b) Πρέπει να φύγω. (c) Αύριο θα πάω στην Αθήνα. (d) Μπορείτε να με βοηθήσετε;"}]}];
+
+</script>
+<script>
+const LEKCIJE = [
+{id:"A1",naslov:"Na plaži",gr:"Η παραλία",grupa:"Svakodnevno",opis:"Ležaljke, suncobran, more i sve što ide uz grčku plažu.",
+cuti:[["Είναι ελεύθερες;","íne eléftheres?","Da li su slobodne?"],["Ένα ρόφημα ανά άτομο.","éna rófima aná átomo.","Jedno piće po osobi."],["Προσέξτε τις μέδουσες.","prosékste tis méduses.","Pazite na meduze."]],
+recnik:[["η παραλία","i paralía","plaža"],["η ξαπλώστρα","i ksaplóstra","ležaljka"],["η ομπρέλα","i ombréla","suncobran"],["η πετσέτα","i petséta","peškir"],["η θάλασσα","i thálasa","more"],["η άμμος","i ámos","pesak"],["τα βότσαλα","ta vótsala","obluci"],["το κύμα","to kíma","talas"],["η σκιά","i skiá","hlad"],["ο ήλιος","o ílios","sunce"],["η μέδουσα","i méduza","meduza"],["ο ναυαγοσώστης","o navagosóstis","spasilac"]],
+dijalog:[["Καλημέρα σας.","kaliméra sas.","Dobar dan."],["Καλημέρα.","kaliméra.","Dobar dan."],["Πόσο κάνουν δύο ξαπλώστρες και μία ομπρέλα;","póso kánun dío ksaplóstres ke mía ombréla?","Koliko koštaju dve ležaljke i jedan suncobran?"],["Είκοσι ευρώ.","íkosi evró.","Dvadeset evra."],["Περιλαμβάνεται καφές ή νερό;","perilamvánete kafés i neró?","Da li su kafa ili voda uključeni?"],["Ναι, ένα ρόφημα ανά άτομο.","ne, éna rófima aná átomo.","Da, jedno piće po osobi."],["Ωραία. Θα τα πάρουμε.","oréa. tha ta párume.","Odlično. Uzećemo ih."]],
+fraze:[["Έχει σκιά εδώ;","éhi skiá edó?","Ima li ovde hlada?"],["Μπορούμε να καθίσουμε εδώ;","borúme na kathísume edó?","Možemo li da sednemo ovde?"],["Είναι ελεύθερες αυτές οι ξαπλώστρες;","íne eléftheres aftés i ksaplóstres?","Da li su ove ležaljke slobodne?"],["Θα πληρώσω με κάρτα.","tha pliróso me kárta.","Platiću karticom."],["Πού είναι το ντους;","pu íne to dus?","Gde je tuš?"],["Πού είναι η τουαλέτα;","pu íne i tualéta?","Gde je toalet?"],["Έχει πολύ κύμα σήμερα.","éhi polí kíma símera.","Danas ima mnogo talasa."],["Η θάλασσα είναι ήρεμη.","i thálasa íne íremi.","More je mirno."],["Το νερό είναι ζεστό.","to neró íne zestó.","Voda je topla."],["Υπάρχει ναυαγοσώστης;","ipárhi navagosóstis?","Da li ima spasilac?"]],
+vezba:[["Dve ležaljke i jedan suncobran, molim.","Δύο ξαπλώστρες και μία ομπρέλα, παρακαλώ.","dío ksaplóstres ke mía ombréla, parakaló."],["Koliko košta?","Πόσο κάνει;","póso káni?"],["Platiću karticom.","Θα πληρώσω με κάρτα.","tha pliróso me kárta."],["Gde je tuš?","Πού είναι το ντους;","pu íne to dus?"],["Ima li meduza?","Υπάρχουν μέδουσες;","ipárhun méduses?"],["More je danas mirno.","Η θάλασσα είναι ήρεμη σήμερα.","i thálasa íne íremi símera."],["Voda je veoma topla.","Το νερό είναι πολύ ζεστό.","to neró íne polí zestó."],["Da li su ove ležaljke slobodne?","Είναι ελεύθερες αυτές οι ξαπλώστρες;","íne eléftheres aftés i ksaplóstres?"],["Možemo li da sednemo ovde?","Μπορούμε να καθίσουμε εδώ;","borúme na kathísume edó?"],["Hvala, prijatan dan.","Ευχαριστώ. Καλή σας μέρα.","efharistó. kalí sas méra."]]},
+
+{id:"A2",naslov:"Pekara",gr:"Ο φούρνος",grupa:"Hrana i piće",opis:"Tiropita, kuluri i bugaca — grčki doručak.",
+cuti:[["Παρακαλώ;","parakaló?","Izvolite?"],["Τι θα θέλατε;","ti tha thélate?","Šta biste želeli?"],["Κάτι άλλο;","káti álo?","Još nešto?"],["Αυτό είναι όλο;","aftó íne ólo?","Je li to sve?"],["Ορίστε.","oríste.","Izvolite."],["Ευχαριστούμε.","efharistúme.","Hvala."]],
+recnik:[["η τυρόπιτα","i tirópita","pita sa sirom"],["η σπανακόπιτα","i spanakópita","pita sa spanaćem"],["η μπουγάτσα","i bugátsa","bugaca"],["το κουλούρι","to kulúri","đevrek sa susamom"],["το κρουασάν","to kruasán","kroasan"],["η μπαγκέτα","i bagéta","baget"],["το ψωμί ολικής","to psomí olikís","integralni hleb"],["το χωριάτικο ψωμί","to horiátiko psomí","seoski hleb"],["φρέσκο","frésko","sveže"],["ζεστό","zestó","toplo"],["μόλις βγήκε","mólis vgíke","upravo ispečeno"]],
+dijalog:[["Καλημέρα.","kaliméra.","Dobar dan."],["Τι θα θέλατε;","ti tha thélate?","Šta biste želeli?"],["Θα ήθελα δύο τυρόπιτες και ένα κουλούρι.","tha íthela dío tirópites ke éna kulúri.","Želeo bih dve pite sa sirom i jedan đevrek."],["Κάτι άλλο;","káti álo?","Još nešto?"],["Ναι, μία μπουγάτσα.","ne, mía bugátsa.","Da, jednu bugacu."],["Τέσσερα ευρώ και ογδόντα λεπτά.","tésera evró ke ogdónda leptá.","4,80 evra."],["Με κάρτα, παρακαλώ.","me kárta, parakaló.","Karticom, molim."],["Είναι φρέσκο;","íne frésko?","Da li je sveže?"],["Ναι, μόλις βγήκε από τον φούρνο.","ne, mólis vgíke apó ton fúrno.","Da, upravo je izašlo iz peći."],["Ευχαριστούμε. Καλή σας μέρα!","efharistúme. kalí sas méra!","Hvala. Prijatan dan!"]],
+fraze:[["Μπορείτε να το κόψετε;","boríte na to kópsete?","Možete li da isečete?"],["Έχετε ψωμί ολικής;","éhete psomí olikís?","Imate li integralni hleb?"],["Έχετε κάτι χωρίς γλουτένη;","éhete káti horís gluténi?","Imate li nešto bez glutena?"],["Θα ήθελα και έναν καφέ.","tha íthela ke énan kafé.","Želeo bih i jednu kafu."]],
+napomena:"U mnogim pekarama prodavac umesto formalnog „Τι θα θέλατε;“ jednostavno kaže „Παρακαλώ;“ i očekuje da odmah kažeš šta želiš. To je sasvim uobičajen i ljubazan način obraćanja.",
+vezba:[["Kupi dve pite sa sirom.","Θα ήθελα δύο τυρόπιτες.","tha íthela dío tirópites."],["Pitaj da li je hleb svež.","Είναι φρέσκο το ψωμί;","íne frésko to psomí?"],["Traži integralni hleb.","Έχετε ψωμί ολικής;","éhete psomí olikís?"],["Plati karticom.","Με κάρτα, παρακαλώ.","me kárta, parakaló."],["Zahvali se i poželi prijatan dan.","Ευχαριστώ. Καλή σας μέρα!","efharistó. kalí sas méra!"]]},
+
+{id:"A3",naslov:"Kafić",gr:"Η καφετέρια",grupa:"Hrana i piće",opis:"Freddo, grčka kafa i plaćanje računa.",
+cuti:[["Τι θα πάρετε;","ti tha párete?","Šta ćete popiti?"],["Για εδώ ή για έξω;","ja edó i ja ékso?","Za ovde ili za poneti?"],["Με ζάχαρη;","me záhari?","Sa šećerom?"],["Κάτι άλλο;","káti álo?","Još nešto?"]],
+recnik:[["φρέντο εσπρέσο","frédo espréso","freddo espresso"],["φρέντο καπουτσίνο","frédo kaputsíno","freddo cappuccino"],["ελληνικός καφές","elinikós kafés","grčka kafa"],["καπουτσίνο","kaputsíno","kapućino"],["εσπρέσο","espréso","espresso"],["νερό","neró","voda"],["χυμός","himós","sok"],["χωρίς ζάχαρη","horís záhari","bez šećera"],["μέτριος","métrios","srednje sladak"],["γλυκός","glikós","sladak"],["σκέτος","skétos","bez šećera (kafa)"]],
+dijalog:[["Καλημέρα.","kaliméra.","Dobar dan."],["Τι θα πάρετε;","ti tha párete?","Šta ćete popiti?"],["Έναν φρέντο καπουτσίνο χωρίς ζάχαρη.","énan fréndo kaputsíno horís záhari.","Jedan freddo cappuccino bez šećera."],["Και ένα νερό, παρακαλώ.","ke éna neró, parakaló.","I jednu vodu, molim."],["Βεβαίως.","vevéos.","Naravno."],["Τον λογαριασμό, παρακαλώ.","ton logariazmó, parakaló.","Račun, molim."],["Με κάρτα ή μετρητά;","me kárta i metritá?","Karticom ili gotovinom?"],["Με κάρτα.","me kárta.","Karticom."],["Ευχαριστούμε. Να είστε καλά!","efharistúme. na íste kalá!","Hvala. Prijatan dan!"]],
+fraze:[["Έναν φρέντο εσπρέσο, παρακαλώ.","énan fréndo espréso, parakaló.","Jedan freddo espresso, molim."],["Χωρίς ζάχαρη.","horís záhari.","Bez šećera."],["Ένα νερό, παρακαλώ.","éna neró, parakaló.","Jednu vodu, molim."],["Τον λογαριασμό, παρακαλώ.","ton logariazmó, parakaló.","Račun, molim."]],
+napomena:"Freddo espresso i freddo cappuccino su najčešće letnje kafe. Ako kažeš samo „καφές“, konobar će pitati koju vrstu želiš.",
+vezba:[["Naruči freddo espresso bez šećera.","Έναν φρέντο εσπρέσο χωρίς ζάχαρη.","énan fréndo espréso horís záhari."],["Traži čašu vode.","Ένα νερό, παρακαλώ.","éna neró, parakaló."],["Zatraži račun.","Τον λογαριασμό, παρακαλώ.","ton logariazmó, parakaló."],["Plati karticom.","Με κάρτα.","me kárta."],["Zahvali se.","Ευχαριστώ πολύ.","efharistó polí."]]},
+
+{id:"A4",naslov:"Restoran i taverna",gr:"Εστιατόριο – Ταβέρνα",grupa:"Hrana i piće",opis:"Naručivanje, preporuke konobara i plaćanje.",
+cuti:[["Έχετε κράτηση;","éhete krátisi?","Imate li rezervaciju?"],["Για πόσα άτομα;","ja pósa átoma?","Za koliko osoba?"],["Ορίστε ο κατάλογος.","oríste o katálogos.","Izvolite jelovnik."],["Τι θα πάρετε;","ti tha párete?","Šta ćete naručiti?"],["Κάτι να πιείτε;","káti na piíte?","Nešto za piće?"],["Καλή όρεξη!","kalí óreksi!","Prijatno!"]],
+recnik:[["ο κατάλογος","o katálogos","jelovnik"],["το ορεκτικό","to orektikó","predjelo"],["η χωριάτικη σαλάτα","i horiátiki saláta","grčka salata"],["το τζατζίκι","to dzadzíki","caciki"],["ο γύρος","o jíros","giros"],["τα καλαμάκια","ta kalamákia","ražnjići"],["το ψάρι","to psári","riba"],["το νερό","to neró","voda"],["το κρασί","to krasí","vino"],["η μπίρα","i bíra","pivo"],["το επιδόρπιο","to epidórpio","desert"],["ο λογαριασμός","o logariazmós","račun"]],
+dijalog:[["Καλησπέρα. Ένα τραπέζι για δύο, παρακαλώ.","kalispéra. éna trapézi ja dío, parakaló.","Dobro veče. Sto za dvoje, molim."],["Ορίστε.","oríste.","Izvolite."],["Θα θέλαμε μία χωριάτικη σαλάτα, τζατζίκι και δύο γύρους.","tha thélame mía horiátiki saláta, dzadzíki ke dío jírus.","Želeli bismo grčku salatu, caciki i dva girosa."],["Κάτι να πιείτε;","káti na piíte?","Nešto za piće?"],["Ένα λευκό κρασί και δύο νερά.","éna lefkó krasí ke dío nerá.","Jedno belo vino i dve vode."],["Τον λογαριασμό, παρακαλώ.","ton logariazmó, parakaló.","Račun, molim."],["Όλα ήταν πολύ νόστιμα.","óla ítan polí nóstima.","Sve je bilo veoma ukusno."],["Ευχαριστούμε. Καλό σας βράδυ!","efharistúme. kaló sas vrádi!","Hvala. Prijatno veče!"]],
+fraze:[["Τι προτείνετε;","ti protínete?","Šta preporučujete?"],["Χωρίς κρεμμύδι.","horís kremídi.","Bez luka."],["Χωρίς γλουτένη.","horís gluténi.","Bez glutena."],["Έχω αλλεργία σε...","ého alerjía se...","Alergičan sam na..."],["Μπορείτε να μας προτείνετε κάτι;","boríte na mas protínete káti?","Možete li nam nešto preporučiti?"],["Στην υγειά μας!","stin ijiá mas!","Živeli!"],["Μπορώ να πληρώσω με κάρτα;","boró na pliróso me kárta?","Mogu li da platim karticom?"]],
+napomena:"U tavernama konobar često preporuči dnevni specijal ili svežu ribu. Slobodno pitaj „Τι προτείνετε;“ — to je sasvim uobičajeno.",
+vezba:[["Traži sto za četvoro.","Ένα τραπέζι για τέσσερις, παρακαλώ.","éna trapézi ja téseris, parakaló."],["Naruči grčku salatu i giros.","Μία χωριάτικη σαλάτα και έναν γύρο.","mía horiátiki saláta ke énan jíro."],["Traži belo vino.","Ένα λευκό κρασί.","éna lefkó krasí."],["Zatraži račun.","Τον λογαριασμό, παρακαλώ.","ton logariazmó, parakaló."],["Reci da je hrana bila veoma ukusna.","Όλα ήταν πολύ νόστιμα.","óla ítan polí nóstima."]]},
+
+{id:"A5",naslov:"Giros i fast food",gr:"Γύρος και fast food",grupa:"Hrana i piće",opis:"U piti ili kao porcija, sa svim dodacima.",
+cuti:[["Τι θα θέλατε;","ti tha thélate?","Šta biste želeli?"],["Σε πίτα ή σε μερίδα;","se píta i se merída?","U piti ili kao porcija?"],["Με απ' όλα;","me ap' óla?","Sa svim dodacima?"],["Κάτι να πιείτε;","káti na piíte?","Nešto za piće?"],["Για εδώ ή για έξω;","ja edó i ja ékso?","Za ovde ili za poneti?"]],
+recnik:[["ο γύρος","o jíros","giros"],["η πίτα","i píta","pita"],["η μερίδα","i merída","porcija"],["οι πατάτες","i patátes","pomfrit"],["η ντομάτα","i domáta","paradajz"],["το κρεμμύδι","to kremídi","luk"],["το τζατζίκι","to dzadzíki","caciki"],["το κοτόπουλο","to kotópulo","piletina"],["το χοιρινό","to hirinó","svinjetina"],["το αναψυκτικό","to anapsiktikó","bezalkoholno piće"]],
+dijalog:[["Καλησπέρα.","kalispéra.","Dobro veče."],["Τι θα θέλατε;","ti tha thélate?","Šta biste želeli?"],["Έναν γύρο σε πίτα με απ' όλα.","énan jíro se píta me ap' óla.","Jedan giros u piti sa svim dodacima."],["Με χοιρινό ή με κοτόπουλο;","me hirinó i me kotópulo?","Sa svinjetinom ili piletinom?"],["Με κοτόπουλο, παρακαλώ.","me kotópulo, parakaló.","Sa piletinom, molim."],["Κάτι να πιείτε;","káti na piíte?","Nešto za piće?"],["Ένα νερό.","éna neró.","Jednu vodu."],["Για εδώ ή για έξω;","ja edó i ja ékso?","Za ovde ili za poneti?"],["Για εδώ.","ja edó.","Za ovde."]],
+fraze:[["Χωρίς κρεμμύδι.","horís kremídi.","Bez luka."],["Λίγο τζατζίκι, παρακαλώ.","lígo dzadzíki, parakaló.","Malo cacikija, molim."],["Χωρίς πατάτες.","horís patátes.","Bez pomfrita."],["Πόσο κάνει;","póso káni?","Koliko košta?"]],
+vezba:[["Naruči giros u piti sa piletinom.","Έναν γύρο σε πίτα με κοτόπουλο.","énan jíro se píta me kotópulo."],["Traži bez luka.","Χωρίς κρεμμύδι.","horís kremídi."],["Pitaj koliko košta.","Πόσο κάνει;","póso káni?"],["Naruči vodu.","Ένα νερό.","éna neró."],["Reci da želiš za poneti.","Για έξω.","ja ékso."]]},
+
+{id:"A6",naslov:"Supermarket",gr:"Σούπερ μάρκετ",grupa:"Kupovina",opis:"Kesa, kartica, akcije i fiskalni račun.",
+cuti:[["Χρειάζεστε σακούλα;","hriázeste sakúla?","Da li vam treba kesa?"],["Με κάρτα ή μετρητά;","me kárta i metritá?","Karticom ili gotovinom?"],["Έχετε κάρτα μέλους;","éhete kárta mélus?","Imate li karticu lojalnosti?"],["Η απόδειξή σας.","i apódiksi sas.","Vaš račun."],["Καλή σας μέρα!","kalí sas méra!","Prijatan dan!"]],
+recnik:[["το γάλα","to gála","mleko"],["το ψωμί","to psomí","hleb"],["το νερό","to neró","voda"],["τα αυγά","ta avgá","jaja"],["το τυρί","to tirí","sir"],["τα φρούτα","ta frúta","voće"],["τα λαχανικά","ta lahaniká","povrće"],["η σακούλα","i sakúla","kesa"],["η απόδειξη","i apódiksi","fiskalni račun"],["η προσφορά","i prosforá","akcija"]],
+dijalog:[["Καλημέρα.","kaliméra.","Dobar dan."],["Βρήκατε όλα όσα θέλατε;","vríkate óla ósa thélate?","Da li ste našli sve što ste želeli?"],["Ναι, ευχαριστώ.","ne, efharistó.","Da, hvala."],["Χρειάζεστε σακούλα;","hriázeste sakúla?","Treba li vam kesa?"],["Ναι, μία σακούλα, παρακαλώ.","ne, mía sakúla, parakaló.","Da, jednu kesu, molim."],["Με κάρτα ή μετρητά;","me kárta i metritá?","Karticom ili gotovinom?"],["Με κάρτα.","me kárta.","Karticom."],["Η απόδειξή σας. Ευχαριστούμε!","i apódiksi sas. efharistúme!","Izvolite račun. Hvala!"]],
+fraze:[["Πού είναι το ψωμί;","pu íne to psomí?","Gde je hleb?"],["Πού είναι το γάλα;","pu íne to gála?","Gde je mleko?"],["Έχετε εμφιαλωμένο νερό;","éhete emfialoméno neró?","Imate li flaširanu vodu?"],["Είναι σε προσφορά;","íne se prosforá?","Da li je na akciji?"]],
+vezba:[["Pitaj gde je mleko.","Πού είναι το γάλα;","pu íne to gála?"],["Traži jednu kesu.","Μία σακούλα, παρακαλώ.","mía sakúla, parakaló."],["Plati karticom.","Με κάρτα.","me kárta."],["Pitaj da li je proizvod na akciji.","Είναι σε προσφορά;","íne se prosforá?"],["Zahvali se kasiru.","Ευχαριστώ πολύ.","efharistó polí."]]},
+
+{id:"A7",naslov:"Pijaca",gr:"Λαϊκή αγορά",grupa:"Kupovina",opis:"Voće, povrće, masline i feta na kilo.",
+cuti:[["Τι θα θέλατε;","ti tha thélate?","Šta biste želeli?"],["Πόσο θέλετε;","póso thélete?","Koliko želite?"],["Άλλο κάτι;","álo káti?","Još nešto?"],["Είναι φρέσκα.","íne fréska.","Sveže je."],["Ευχαριστούμε, καλή σας μέρα!","efharistúme, kalí sas méra!","Hvala, prijatan dan!"]],
+recnik:[["τα μήλα","ta míla","jabuke"],["τα πορτοκάλια","ta portokália","pomorandže"],["τα ροδάκινα","ta rodákina","breskve"],["τα σταφύλια","ta stafília","grožđe"],["οι ντομάτες","i domátes","paradajz"],["τα αγγούρια","ta angúria","krastavci"],["οι ελιές","i eliés","masline"],["η φέτα","i féta","feta sir"],["το κιλό","to kiló","kilogram"],["το μισό κιλό","to misó kiló","pola kilograma"]],
+dijalog:[["Καλημέρα.","kaliméra.","Dobar dan."],["Τι θα θέλατε;","ti tha thélate?","Šta biste želeli?"],["Ένα κιλό ροδάκινα, μισό κιλό ντομάτες και λίγες ελιές.","éna kiló rodákina, misó kiló domátes ke líjes eliés.","Jedan kilogram breskvi, pola kilograma paradajza i malo maslina."],["Κάτι άλλο;","káti álo?","Još nešto?"],["Ναι, διακόσια γραμμάρια φέτα.","ne, diakósia gramária féta.","Da, 200 grama fete."],["Ορίστε.","oríste.","Izvolite."],["Ευχαριστώ πολύ.","efharistó polí.","Hvala puno."]],
+fraze:[["Πόσο κάνει το κιλό;","póso káni to kiló?","Koliko košta kilogram?"],["Μισό κιλό, παρακαλώ.","misó kiló, parakaló.","Pola kilograma, molim."],["Είναι ντόπια;","íne dópia?","Da li je domaće?"],["Μπορώ να δοκιμάσω;","boró na dokimáso?","Mogu li da probam?"]],
+vezba:[["Kupi kilogram pomorandži.","Ένα κιλό πορτοκάλια.","éna kiló portokália."],["Traži pola kilograma paradajza.","Μισό κιλό ντομάτες, παρακαλώ.","misó kiló domátes, parakaló."],["Pitaj koliko košta kilogram maslina.","Πόσο κάνει το κιλό οι ελιές;","póso káni to kiló i eliés?"],["Pitaj da li možeš da probaš sir.","Μπορώ να δοκιμάσω τη φέτα;","boró na dokimáso ti féta?"],["Zahvali se prodavcu.","Ευχαριστώ πολύ.","efharistó polí."]]},
+
+{id:"A8",naslov:"Poslastičarnica",gr:"Ζαχαροπλαστείο",grupa:"Hrana i piće",opis:"Sladoled, baklava i lukumades.",
+cuti:[["Τι θα θέλατε;","ti tha thélate?","Šta biste želeli?"],["Για εδώ ή για έξω;","ja edó i ja ékso?","Za ovde ili za poneti?"],["Σε χωνάκι ή κυπελλάκι;","se honáki i kipeláki?","U kornetu ili u čašici?"],["Μία ή δύο μπάλες;","mía i dío báles?","Jedna ili dve kugle?"],["Κάτι άλλο;","káti álo?","Još nešto?"]],
+recnik:[["το παγωτό","to pagotó","sladoled"],["η μπάλα","i bála","kugla sladoleda"],["το χωνάκι","to honáki","kornet"],["το κυπελλάκι","to kipeláki","čašica"],["ο μπακλαβάς","o baklavás","baklava"],["το γαλακτομπούρεκο","to galaktobúreko","galaktobureko"],["οι λουκουμάδες","i lukumádes","lukumades"],["το γλυκό","to glikó","kolač / slatkiš"],["η σοκολάτα","i sokoláta","čokolada"],["η βανίλια","i vanília","vanila"]],
+dijalog:[["Καλησπέρα.","kalispéra.","Dobro veče."],["Τι θα θέλατε;","ti tha thélate?","Šta biste želeli?"],["Δύο μπάλες παγωτό, παρακαλώ.","dío báles pagotó, parakaló.","Dve kugle sladoleda, molim."],["Τι γεύσεις;","ti jéfsis?","Koje ukuse?"],["Βανίλια και σοκολάτα.","vanília ke sokoláta.","Vanila i čokolada."],["Σε χωνάκι ή κυπελλάκι;","se honáki i kipeláki?","U kornetu ili čašici?"],["Σε χωνάκι.","se honáki.","U kornetu."],["Κάτι άλλο;","káti álo?","Još nešto?"],["Έναν μπακλαβά, παρακαλώ.","énan baklavá, parakaló.","Jednu baklavu, molim."]],
+fraze:[["Ποιες γεύσεις έχετε;","pies jéfsis éhete?","Koje ukuse imate?"],["Θα ήθελα ένα γαλακτομπούρεκο.","tha íthela éna galaktombúreko.","Želeo bih jedan galaktobureko."],["Όχι, ευχαριστώ.","óhi, efharistó.","Ne, hvala."],["Πόσο κάνει;","póso káni?","Koliko košta?"]],
+vezba:[["Naruči dve kugle sladoleda.","Δύο μπάλες παγωτό, παρακαλώ.","dío báles pagotó, parakaló."],["Traži ukus vanile i čokolade.","Βανίλια και σοκολάτα.","vanília ke sokoláta."],["Izaberi kornet.","Σε χωνάκι.","se honáki."],["Naruči jednu baklavu.","Έναν μπακλαβά, παρακαλώ.","énan baklavá, parakaló."],["Pitaj koliko košta.","Πόσο κάνει;","póso káni?"]]},
+
+{id:"A9",naslov:"Hotel",gr:"Ξενοδοχείο",grupa:"Smeštaj",opis:"Prijava, recepcija, doručak i odjava.",
+cuti:[["Έχετε κράτηση;","éhete krátisi?","Imate li rezervaciju?"],["Στο όνομά σας, παρακαλώ;","sto ónoma sas, parakaló?","Na koje ime?"],["Το διαβατήριό σας, παρακαλώ.","to diavatírio sas, parakaló.","Vaš pasoš, molim."],["Το πρωινό είναι από τις επτά έως τις δέκα.","to proinó íne apó tis eptá éos tis déka.","Doručak je od sedam do deset."],["Καλή διαμονή!","kalí diamoní!","Prijatan boravak!"]],
+recnik:[["το ξενοδοχείο","to ksenodohío","hotel"],["η κράτηση","i krátisi","rezervacija"],["η ρεσεψιόν","i resepsión","recepcija"],["το δωμάτιο","to domátio","soba"],["το κλειδί","to klidí","ključ"],["το πρωινό","to proinó","doručak"],["ο ανελκυστήρας","o anelkistíras","lift"],["το διαβατήριο","to diavatírio","pasoš"],["η πισίνα","i pisína","bazen"],["το Wi‑Fi","to vájfaj","Wi‑Fi"]],
+dijalog:[["Καλησπέρα.","kalispéra.","Dobro veče."],["Έχω κράτηση στο όνομα Πέτροβιτς.","ého krátisi sto ónoma pétrovits.","Imam rezervaciju na prezime Petrović."],["Το διαβατήριό σας, παρακαλώ.","to diavatírio sas, parakaló.","Vaš pasoš, molim."],["Ορίστε.","oríste.","Izvolite."],["Το δωμάτιό σας είναι στον δεύτερο όροφο.","to domátio sas íne ston déftero órofo.","Vaša soba je na drugom spratu."],["Έχει Wi‑Fi;","éhi vájfaj?","Da li ima Wi‑Fi?"],["Ναι, είναι δωρεάν.","ne, íne doréan.","Da, besplatan je."],["Ευχαριστώ πολύ.","efharistó polí.","Hvala puno."]],
+fraze:[["Πού είναι το ασανσέρ;","pu íne to asansér?","Gde je lift?"],["Τι ώρα είναι το πρωινό;","ti óra íne to proinó?","U koliko je doručak?"],["Το κλιματιστικό δεν λειτουργεί.","to klimatistikó den liturgí.","Klima ne radi."],["Μπορώ να κάνω αργότερα check-out;","boró na káno argótera ček-aut?","Mogu li kasnije da se odjavim?"]],
+vezba:[["Reci da imaš rezervaciju.","Έχω κράτηση.","ého krátisi."],["Pitaj u koliko je doručak.","Τι ώρα είναι το πρωινό;","ti óra íne to proinó?"],["Traži lozinku za Wi‑Fi.","Ποιος είναι ο κωδικός του Wi‑Fi;","pios íne o kodikós tu vájfaj?"],["Prijavi da klima ne radi.","Το κλιματιστικό δεν λειτουργεί.","to klimatistikó den liturgí."],["Zatraži kasniji check-out.","Μπορώ να κάνω αργότερα check-out;","boró na káno argótera ček-aut?"]]},
+
+{id:"A10",naslov:"Apartman",gr:"Διαμέρισμα",grupa:"Smeštaj",opis:"Domaćin, ključevi, klima i topla voda.",
+cuti:[["Καλώς ήρθατε!","kalós írthate!","Dobro došli!"],["Ακολουθήστε με, παρακαλώ.","akoluthíste me, parakaló.","Pođite za mnom, molim."],["Να τα κλειδιά σας.","na ta klidiá sas.","Evo vaših ključeva."],["Αν χρειαστείτε κάτι, ενημερώστε με.","an hriastíte káti, enimeróste me.","Ako vam nešto zatreba, javite mi."],["Καλή διαμονή!","kalí diamoní!","Prijatan boravak!"]],
+recnik:[["το διαμέρισμα","to diamérizma","apartman"],["το κλειδί","to klidí","ključ"],["το μπαλκόνι","to balkóni","balkon"],["το μπάνιο","to bánio","kupatilo"],["η κουζίνα","i kuzína","kuhinja"],["το κλιματιστικό","to klimatistikó","klima uređaj"],["το ζεστό νερό","to zestó neró","topla voda"],["η πετσέτα","i petséta","peškir"],["η κουβέρτα","i kuvérta","ćebe"],["η αναχώρηση","i anahórisi","odjava / odlazak"]],
+dijalog:[["Καλησπέρα. Έχω κράτηση.","kalispéra. ého krátisi.","Dobro veče. Imam rezervaciju."],["Καλώς ήρθατε. Ακολουθήστε με.","kalós írthate. akoluthíste me.","Dobro došli. Pođite za mnom."],["Να τα κλειδιά σας.","na ta klidiá sas.","Evo vaših ključeva."],["Ποιος είναι ο κωδικός του Wi‑Fi;","pios íne o kodikós tu vájfaj?","Koja je lozinka za Wi‑Fi?"],["Είναι γραμμένος στο τραπέζι.","íne graménos sto trapézi.","Napisana je na stolu."],["Το κλιματιστικό λειτουργεί;","to klimatistikó liturgí?","Da li klima radi?"],["Ναι, φυσικά.","ne, fisiká.","Da, naravno."],["Ευχαριστώ πολύ.","efharistó polí.","Hvala puno."]],
+fraze:[["Δεν έχω ζεστό νερό.","den ého zestó neró.","Nemam toplu vodu."],["Χρειάζομαι καθαρές πετσέτες.","hriázome katharés petsétes.","Potrebni su mi čisti peškiri."],["Μπορώ να μείνω λίγο περισσότερο;","boró na míno lígo perisótero?","Mogu li da ostanem malo duže?"],["Τι ώρα πρέπει να φύγω;","ti óra prépi na fígo?","U koliko sati treba da napustim apartman?"]],
+vezba:[["Pitaj za lozinku za Wi‑Fi.","Ποιος είναι ο κωδικός του Wi‑Fi;","pios íne o kodikós tu vájfaj?"],["Reci da nemaš toplu vodu.","Δεν έχω ζεστό νερό.","den ého zestó neró."],["Traži čiste peškire.","Χρειάζομαι καθαρές πετσέτες.","hriázome katharés petsétes."],["Pitaj u koliko je odjava.","Τι ώρα πρέπει να φύγω;","ti óra prépi na fígo?"],["Zahvali se domaćinu.","Ευχαριστώ πολύ.","efharistó polí."]]},
+
+{id:"A11",naslov:"Rent-a-car",gr:"Ενοικίαση αυτοκινήτου",grupa:"Prevoz",opis:"Preuzimanje vozila, osiguranje i vraćanje.",
+cuti:[["Έχετε κράτηση;","éhete krátisi?","Imate li rezervaciju?"],["Το δίπλωμά σας, παρακαλώ.","to díploma sas, parakaló.","Vozačku dozvolu, molim."],["Η ασφάλεια περιλαμβάνεται.","i asfália perilamvánete.","Osiguranje je uključeno."],["Το αυτοκίνητο έχει γεμάτο ρεζερβουάρ.","to aftokínito éhi jemáto rezervuár.","Automobil ima pun rezervoar."],["Καλή διαδρομή!","kalí diadromí!","Srećan put!"]],
+recnik:[["το αυτοκίνητο","to aftokínito","automobil"],["η κράτηση","i krátisi","rezervacija"],["το δίπλωμα οδήγησης","to díploma odíjisis","vozačka dozvola"],["η ασφάλεια","i asfália","osiguranje"],["το ρεζερβουάρ","to rezervuár","rezervoar"],["η βενζίνη","i venzíni","benzin"],["το πετρέλαιο","to petréleo","dizel"],["το κλειδί","to klidí","ključ"],["οι ζημιές","i zimiés","oštećenja"],["η επιστροφή","i epistrofí","vraćanje vozila"]],
+dijalog:[["Καλημέρα. Έχω κράτηση.","kaliméra. ého krátisi.","Dobar dan. Imam rezervaciju."],["Το δίπλωμά σας, παρακαλώ.","to díploma sas, parakaló.","Vozačku dozvolu, molim."],["Ορίστε.","oríste.","Izvolite."],["Η ασφάλεια περιλαμβάνεται;","i asfália perilamvánete?","Da li je osiguranje uključeno?"],["Ναι, περιλαμβάνεται.","ne, perilamvánete.","Da, uključeno je."],["Το αυτοκίνητο έχει γεμάτο ρεζερβουάρ.","to aftokínito éhi jemáto rezervuár.","Automobil ima pun rezervoar."],["Ευχαριστώ πολύ.","efharistó polí.","Hvala puno."]],
+fraze:[["Έχει αυτόματο κιβώτιο;","éhi aftómato kivótio?","Da li ima automatski menjač?"],["Υπάρχουν ζημιές στο αυτοκίνητο;","ipárhun zimiés sto aftokínito?","Da li postoje oštećenja na automobilu?"],["Πού πρέπει να επιστρέψω το αυτοκίνητο;","pu prépi na epistrépso to aftokínito?","Gde treba da vratim automobil?"],["Μπορώ να παρατείνω την κράτηση;","boró na paratíno tin krátisi?","Mogu li da produžim rezervaciju?"]],
+vezba:[["Reci da imaš rezervaciju.","Έχω κράτηση.","ého krátisi."],["Pitaj da li je osiguranje uključeno.","Η ασφάλεια περιλαμβάνεται;","i asfália perilamvánete?"],["Pitaj da li je automobil sa automatskim menjačem.","Έχει αυτόματο κιβώτιο;","éhi aftómato kivótio?"],["Pitaj gde vraćaš automobil.","Πού πρέπει να επιστρέψω το αυτοκίνητο;","pu prépi na epistrépso to aftokínito?"],["Zahvali se.","Ευχαριστώ πολύ.","efharistó polí."]]},
+
+{id:"A12",naslov:"Benzinska pumpa",gr:"Πρατήριο καυσίμων",grupa:"Prevoz",opis:"Gorivo, pun rezervoar, vazduh i račun.",
+cuti:[["Τι καύσιμο θέλετε;","ti káfsimo thélete?","Koje gorivo želite?"],["Πόσα ευρώ;","pósa evró?","Za koliko evra?"],["Γεμάτο;","jemáto?","Pun rezervoar?"],["Με κάρτα ή μετρητά;","me kárta i metritá?","Karticom ili gotovinom?"],["Καλό ταξίδι!","kaló taksídi!","Srećan put!"]],
+recnik:[["η βενζίνη","i venzíni","benzin"],["το πετρέλαιο","to petréleo","dizel"],["το καύσιμο","to káfsimo","gorivo"],["το ρεζερβουάρ","to rezervuár","rezervoar"],["η αντλία","i andlía","pumpa"],["ο αέρας","o aéras","vazduh"],["το λάστιχο","to lástiho","guma"],["το λάδι","to ládi","ulje"],["το πλυντήριο αυτοκινήτων","to plindírio aftokiníton","autoperionica"],["η απόδειξη","i apódiksi","račun"]],
+dijalog:[["Καλημέρα.","kaliméra.","Dobar dan."],["Τι καύσιμο θέλετε;","ti káfsimo thélete?","Koje gorivo želite?"],["Αμόλυβδη 95, γεμάτο, παρακαλώ.","amólivdi 95, jemáto, parakaló.","Bezolovni 95, pun rezervoar, molim."],["Με κάρτα ή μετρητά;","me kárta i metritá?","Karticom ili gotovinom?"],["Με κάρτα.","me kárta.","Karticom."],["Θέλετε απόδειξη;","thélete apódiksi?","Želite li račun?"],["Ναι, ευχαριστώ.","ne, efharistó.","Da, hvala."]],
+fraze:[["Πού μπορώ να βάλω αέρα στα λάστιχα;","pu boró na válo áera sta lástiha?","Gde mogu da dopunim gume vazduhom?"],["Έχετε πλυντήριο αυτοκινήτων;","éhete plindírio aftokiníton?","Imate li autoperionicu?"],["Μπορώ να ελέγξω το λάδι;","boró na elégkso to ládi?","Mogu li da proverim ulje?"],["Μόνο για είκοσι ευρώ.","móno ja íkosi evró.","Samo za dvadeset evra."]],
+vezba:[["Naruči pun rezervoar bezolovnog benzina 95.","Αμόλυβδη 95, γεμάτο, παρακαλώ.","amólivdi 95, jemáto, parakaló."],["Traži dizel za 30 evra.","Πετρέλαιο για τριάντα ευρώ.","petréleo ja triánda evró."],["Pitaj gde možeš da dopuniš gume vazduhom.","Πού μπορώ να βάλω αέρα στα λάστιχα;","pu boró na válo áera sta lástiha?"],["Plati karticom.","Με κάρτα.","me kárta."],["Traži račun.","Ναι, την απόδειξη, παρακαλώ.","ne, tin apódiksi, parakaló."]]},
+
+{id:"A13",naslov:"Parking",gr:"Πάρκινγκ",grupa:"Prevoz",opis:"Slobodno mesto, cena po satu i kazne.",
+recnik:[["το πάρκινγκ","to párking","parking"],["η θέση","i thési","parking mesto"],["το εισιτήριο","to isitírio","parking karta"],["το πρόστιμο","to próstimo","kazna"],["το γκαράζ","to garáz","garaža"]],
+dijalog:[["Πού μπορώ να παρκάρω;","pu boró na parkáro?","Gde mogu da parkiram?"],["Υπάρχει ελεύθερη θέση.","ipárhi eléftheri thési.","Ima slobodno mesto."],["Πόσο κοστίζει;","póso kostízi?","Koliko košta?"],["Δύο ευρώ την ώρα.","dío evró tin óra.","Dva evra na sat."]],
+fraze:[["Πού είναι το πάρκινγκ;","pu íne to párking?","Gde je parking?"],["Μπορώ να πληρώσω με κάρτα;","boró na pliróso me kárta?","Mogu li da platim karticom?"]]},
+
+{id:"A14",naslov:"Autobus",gr:"Λεωφορείο",grupa:"Prevoz",opis:"Karta, stanica i silazak.",
+recnik:[["το λεωφορείο","to leoforío","autobus"],["η στάση","i stási","stanica"],["το εισιτήριο","to isitírio","karta"],["ο οδηγός","o odigós","vozač"],["το δρομολόγιο","to dromolójio","linija"]],
+dijalog:[["Πηγαίνει στο κέντρο;","pigéni sto kéndro?","Da li ide do centra?"],["Ναι, σε δέκα λεπτά.","ne, se déka leptá.","Da, za deset minuta."],["Ένα εισιτήριο, παρακαλώ.","éna isitírio, parakaló.","Jednu kartu, molim."]],
+fraze:[["Πότε φεύγει;","póte févji?","Kada polazi?"],["Πού πρέπει να κατέβω;","pu prépi na katévo?","Gde treba da siđem?"]]},
+
+{id:"A15",naslov:"Taksi",gr:"Ταξί",grupa:"Prevoz",opis:"Adresa, taksimetar i plaćanje.",
+recnik:[["το ταξί","to taksí","taksi"],["ο οδηγός","o odigós","vozač"],["η διεύθυνση","i dhiéfthinsi","adresa"],["το ταξίμετρο","to taksímetro","taksimetar"],["το αεροδρόμιο","to aerodrómio","aerodrom"]],
+dijalog:[["Στην παραλία, παρακαλώ.","stin paralía, parakaló.","Do plaže, molim."],["Πόσο θα κοστίσει περίπου;","póso tha kostísi perípu?","Koliko će otprilike koštati?"],["Μπορώ να πληρώσω με κάρτα;","boró na pliróso me kárta?","Mogu li da platim karticom?"]],
+fraze:[["Σταματήστε εδώ.","stamatíste edó.","Stanite ovde."],["Ευχαριστώ, γεια σας.","efharistó, jia sas.","Hvala, doviđenja."]]},
+
+{id:"A16",naslov:"Trajekt",gr:"Πλοίο / φέρι",grupa:"Prevoz",opis:"Karte za ostrva i ukrcavanje.",
+recnik:[["το πλοίο","to plío","brod"],["το πλοίο/φέρι","to plío / féri","trajekt"],["το εισιτήριο","to isitírio","karta"],["το λιμάνι","to limáni","luka"],["το κατάστρωμα","to katástroma","paluba"]],
+dijalog:[["Δύο εισιτήρια για Θάσο, παρακαλώ.","dío isitíria ja tháso, parakaló.","Dve karte za Tasos, molim."],["Με αυτοκίνητο;","me aftokínito?","Sa automobilom?"],["Ναι.","ne.","Da."]],
+fraze:[["Από ποια πύλη;","apó pia píli?","Sa kog izlaza?"],["Τι ώρα αναχωρεί;","ti óra anahorí?","U koliko polazi?"]]},
+
+{id:"A17",naslov:"Apoteka",gr:"Φαρμακείο",grupa:"Zdravlje",opis:"Lekovi i jednostavne tegobe.",
+recnik:[["το φαρμακείο","to farmakío","apoteka"],["το φάρμακο","to fármako","lek"],["ο πυρετός","o piretós","temperatura"],["ο πονοκέφαλος","o ponokéfalos","glavobolja"],["η κρέμα","i kréma","krema"]],
+dijalog:[["Καλημέρα.","kaliméra.","Dobar dan."],["Έχω πονοκέφαλο.","ého ponokéfalo.","Imam glavobolju."],["Θέλω ένα φάρμακο.","thélo éna fármako.","Želim jedan lek."],["Ορίστε.","oríste.","Izvolite."]],
+fraze:[["Έχετε αντηλιακή κρέμα;","éhete andiliakí kréma?","Imate li kremu za sunčanje?"],["Χρειάζομαι παυσίπονο.","hriázome pafsípono.","Treba mi lek protiv bolova."]]},
+
+{id:"A18",naslov:"Hitni slučajevi",gr:"Έκτακτη ανάγκη",grupa:"Zdravlje",opis:"Najvažnije fraze kada je hitno.",
+recnik:[["το νοσοκομείο","to nosokomío","bolnica"],["ο γιατρός","o jatrós","doktor"],["η αστυνομία","i astinomía","policija"],["το ασθενοφόρο","to asthenofóro","hitna pomoć"],["βοήθεια","voíthia","pomoć"]],
+dijalog:[["Βοήθεια!","vóithia!","Upomoć!"],["Χρειάζομαι γιατρό.","hriázome jatró.","Treba mi doktor."],["Καλέστε ασθενοφόρο!","kaléste asthenofóro!","Pozovite hitnu pomoć!"]],
+fraze:[["Πού είναι το νοσοκομείο;","pu íne to nosokomío?","Gde je bolnica?"],["Καλέστε την αστυνομία.","kaléste tin astinomía.","Pozovite policiju."]]},
+
+{id:"A19",naslov:"Kupovina odeće",gr:"Ρούχα",grupa:"Kupovina",opis:"Veličina, kabina i boje.",
+recnik:[["το μέγεθος","to méjethos","veličina"],["το δοκιμαστήριο","to dokimastírio","kabina"],["το φόρεμα","to fórema","haljina"],["τα παπούτσια","ta papútsia","cipele"],["το μπλουζάκι","to bluzáki","majica"]],
+dijalog:[["Έχετε μεγαλύτερο μέγεθος;","éhete megalítero méjethos?","Imate li veći broj?"],["Μπορώ να το δοκιμάσω;","boró na to dokimáso?","Mogu li da probam?"],["Μου αρέσει. Θα το πάρω.","mu arési. tha to páro.","Sviđa mi se. Uzeću ga."]],
+fraze:[["Έχετε άλλο χρώμα;","éhete álo hróma?","Imate li drugu boju?"],["Είναι ακριβό.","íne akrivó.","Skupo je."]]},
+
+{id:"A20",naslov:"Suveniri",gr:"Σουβενίρ",grupa:"Kupovina",opis:"Maslinovo ulje, med i keramika.",
+recnik:[["το σουβενίρ","to suvenír","suvenir"],["το ελαιόλαδο","to eleóladho","maslinovo ulje"],["το μέλι","to méli","med"],["το κρασί","to krasí","vino"],["η κεραμική","i keramikí","keramika"]],
+dijalog:[["Θα ήθελα ένα μπουκάλι ελαιόλαδο.","tha íthela éna bukáli eleólado.","Želeo bih jednu flašu maslinovog ulja."],["Πόσο κοστίζει;","póso kostízi?","Koliko košta?"],["Θα το πάρω.","tha to páro.","Uzeću ga."]],
+fraze:[["Είναι χειροποίητο;","íne hiropíito?","Da li je ručno rađeno?"],["Μπορώ να πληρώσω με κάρτα;","boró na pliróso me kárta?","Mogu li da platim karticom?"]]},
+
+{id:"A21",naslov:"Pitanje za put",gr:"Ο δρόμος",grupa:"Svakodnevno",opis:"Levo, desno, pravo — i koliko je daleko.",
+recnik:[["ο δρόμος","o drómos","ulica"],["η πλατεία","i platía","trg"],["αριστερά","aristerá","levo"],["δεξιά","deksiá","desno"],["ευθεία","efthía","pravo"]],
+dijalog:[["Πού είναι η παραλία;","pu íne i paralía?","Gde je plaža?"],["Πηγαίνετε ευθεία και μετά δεξιά.","pigénete efthía ke metá deksiá.","Idite pravo pa desno."]],
+fraze:[["Είναι μακριά;","íne makriá?","Da li je daleko?"],["Μπορείτε να μου δείξετε;","boríte na mu díksete?","Možete li mi pokazati?"]]},
+
+{id:"A22",naslov:"Razgovor sa Grcima",gr:"Κουβέντα",grupa:"Svakodnevno",opis:"Upoznavanje i mali razgovor.",
+recnik:[["Πώς σε λένε;","pos se léne?","Kako se zoveš?"],["Από πού είσαι;","apó pu íse?","Odakle si?"],["η Σερβία","i Servía","Srbija"],["οι διακοπές","i diakopés","odmor"],["χαίρω πολύ","héro polí","drago mi je"]],
+dijalog:[["Από πού είσαι;","apó pu íse?","Odakle si?"],["Είμαι από τη Σερβία.","íme apó ti servía.","Iz Srbije sam."],["Χαίρω πολύ!","héro polí!","Drago mi je!"]],
+fraze:[["Μιλάτε αγγλικά;","miláte angliká?","Govorite li engleski?"],["Μαθαίνω ελληνικά.","mathéno eliniká.","Učim grčki."]]},
+
+{id:"A23",naslov:"Telefon i internet",gr:"Τηλέφωνο και ίντερνετ",grupa:"Svakodnevno",opis:"SIM kartica, podaci i Wi‑Fi.",
+recnik:[["η κάρτα SIM","i kárta SIM","SIM kartica"],["το διαδίκτυο","to diadíktio","internet"],["τα δεδομένα","ta dedhoména","mobilni podaci"],["η φόρτιση","i fórtisi","dopuna"],["το Wi‑Fi","to vájfaj","Wi‑Fi"]],
+dijalog:[["Θέλω μια κάρτα SIM.","thélo mia kárta SIM.","Želim SIM karticu."],["Πόσα δεδομένα έχει;","pósa dedoména éhi?","Koliko interneta ima?"]],
+fraze:[["Έχετε eSIM;","éhete eSIM?","Imate li eSIM?"],["Χρειάζομαι internet.","hriázome internet.","Treba mi internet."]]},
+
+{id:"A24",naslov:"Plaćanje",gr:"Πληρωμή",grupa:"Svakodnevno",opis:"Kartica, gotovina, bankomat i napojnica.",
+recnik:[["η κάρτα","i kárta","kartica"],["τα μετρητά","ta metritá","gotovina"],["η απόδειξη","i apódiksi","račun"],["το ΑΤΜ","to éj-ti-em","bankomat"],["το φιλοδώρημα","to filodhórima","napojnica"]],
+dijalog:[["Με κάρτα, παρακαλώ.","me kárta, parakaló.","Karticom, molim."],["Θέλω την απόδειξη.","thélo tin apódiksi.","Želim račun."]],
+fraze:[["Πού είναι το ΑΤΜ;","pu íne to atm?","Gde je bankomat?"],["Δέχεστε κάρτες;","déheste kártes?","Primate li kartice?"]]}
+];
+
+</script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const norm=t=>String(t).toLowerCase()
+  .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .replace(/[čć]/g,"c").replace(/š/g,"s").replace(/ž/g,"z").replace(/đ/g,"dj")
+  .replace(/ς/g,"σ");
+
+let filter="sve", upit="";
+
+/* ── tabovi ── */
+let tab="kurs";
+const HERO={
+  kurs:["Petnaest lekcija gramatike, jedna dnevno — od azbuke do prošlog vremena. Rečnik, dijalog i vežbe sa rešenjima.",
+        [[KURS.filter(k=>k.vrsta==="lekcija").length,"lekcija"],
+         [KURS.reduce((n,k)=>n+k.blokovi.filter(b=>b.tip==="tabela").length,0),"tabela"],
+         [14,"dana"]]],
+  situacije:["Dvadeset četiri situacije — od jutarnje pite u pekari do vraćanja rentiranog auta. Rečnik, dijalog i vežba za svaku.",
+        [[LEKCIJE.length,"situacija"],
+         [LEKCIJE.reduce((n,l)=>n+(l.recnik||[]).length,0),"reči"],
+         [LEKCIJE.reduce((n,l)=>n+(l.fraze||[]).length+(l.cuti||[]).length,0),"fraza"]]]
+};
+function crtajHero(){
+  const [p,br]=HERO[tab];
+  $("#hero-p").textContent=p;
+  $("#brojke").innerHTML=br.map(([b,s])=>
+    `<div class="brojka"><b>${b}</b><span>${s}</span></div>`).join("");
+}
+$("#tabovi").onclick=e=>{
+  const b=e.target.closest("[data-tab]"); if(!b)return;
+  tab=b.dataset.tab;
+  [...$("#tabovi").children].forEach(x=>x.classList.toggle("on",x===b));
+  $("#panel-kurs").hidden = tab!=="kurs";
+  $("#panel-situacije").hidden = tab!=="situacije";
+  $("#q").placeholder = tab==="kurs"
+    ? "Traži u kursu — npr. aorist, γεια, brojevi"
+    : "Traži reč ili frazu — npr. račun, νερό, plaža";
+  crtajHero(); crtaj();
+};
+
+/* filteri */
+const grupe=["sve",...new Set(LEKCIJE.map(l=>l.grupa))];
+$("#filteri").innerHTML=grupe.map(g=>
+  `<button class="mini ${g==='sve'?'on':''}" data-g="${esc(g)}">${g==='sve'?'Sve lekcije':esc(g)}</button>`).join("");
+$("#filteri").onclick=e=>{
+  const b=e.target.closest("[data-g]"); if(!b)return;
+  filter=b.dataset.g;
+  [...$("#filteri").children].forEach(x=>x.classList.toggle("on",x===b));
+  crtaj();
+};
+
+/* pretraga */
+$("#q").oninput=e=>{upit=norm(e.target.value.trim());crtaj();};
+
+function tekstLekcije(l){
+  return [l.id,l.naslov,l.gr,l.opis,l.napomena||"",
+    ...(l.recnik||[]).flat(),...(l.fraze||[]).flat(),
+    ...(l.dijalog||[]).flat(),...(l.cuti||[]).flat(),
+    ...(l.vezba||[]).flat()].join(" ");
+}
+
+function crtaj(){
+  if(tab==="kurs") return crtajKurs();
+  const lista=LEKCIJE.filter(l=>
+    (filter==="sve"||l.grupa===filter) &&
+    (!upit||norm(tekstLekcije(l)).includes(upit)));
+  $("#mreza").innerHTML = lista.length ? lista.map(l=>`
+    <button class="kart" data-id="${l.id}">
+      <span class="oznaka">${esc(l.id)} · ${esc(l.grupa)}</span>
+      <h3>${esc(l.naslov)}</h3>
+      <p class="gr">${esc(l.gr)}</p>
+      <p class="op">${esc(l.opis)}</p>
+    </button>`).join("")
+    : `<p class="prazno">Ništa za „${esc($("#q").value)}“. Probaj drugu reč — na srpskom ili grčkom.</p>`;
+}
+$("#mreza").onclick=e=>{
+  const b=e.target.closest("[data-id]"); if(b) otvori(b.dataset.id);
+};
+
+/* ── kurs: mreža lekcija ── */
+function tekstKursa(k){
+  const d=[];
+  k.blokovi.forEach(b=>{
+    if(b.tekst) d.push(b.tekst);
+    if(b.stavke) d.push(b.stavke.join(" "));
+    if(b.redovi) d.push(b.redovi.flat().join(" "));
+    if(b.zaglavlje) d.push(b.zaglavlje.join(" "));
+  });
+  return k.naslov+" "+d.join(" ");
+}
+function crtajKurs(){
+  const lista=KURS.filter(k=>!upit||norm(tekstKursa(k)).includes(upit));
+  $("#dani").innerHTML = lista.length ? lista.map((k,i)=>`
+    <button class="dan ${k.vrsta==='odeljak'?'o':''}" data-k="${KURS.indexOf(k)}">
+      <span class="dan-br">${k.vrsta==='lekcija'?esc(k.br):'§'}</span>
+      <span>
+        <h3>${esc(k.naslov)}</h3>
+        <span class="pod">${k.vrsta==='lekcija'?'Lekcija '+esc(k.br):'Odeljak'} · ${k.blokovi.filter(b=>b.tip==='podnaslov').length} celina</span>
+      </span>
+    </button>`).join("")
+    : `<p class="prazno">Ništa za „${esc($("#q").value)}“ u kursu.</p>`;
+}
+$("#dani").onclick=e=>{
+  const b=e.target.closest("[data-k]"); if(b) otvoriKurs(+b.dataset.k);
+};
+function blokHtml(b){
+  if(b.tip==="podnaslov") return `<h4>${b.tekst}</h4>`;
+  if(b.tip==="pasus")     return `<p class="k-pasus">${b.tekst}</p>`;
+  if(b.tip==="lista")     return `<ul class="k-lista">${b.stavke.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+  if(b.tip==="tabela"){
+    const zag=b.zaglavlje&&b.zaglavlje.some(x=>x)
+      ? `<thead><tr>${b.zaglavlje.map(x=>`<th>${x}</th>`).join("")}</tr></thead>`:"";
+    return `<div class="k-omot"><table class="k-tab">${zag}<tbody>`+
+      b.redovi.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")+
+      `</tbody></table></div>`;
+  }
+  return "";
+}
+function otvoriKurs(i){
+  const k=KURS[i]; if(!k)return;
+  $("#m-oznaka").textContent = k.vrsta==="lekcija" ? "Lekcija "+k.br : "Odeljak";
+  $("#m-naslov").textContent = k.naslov;
+  $("#m-gr").textContent = k.vrsta==="lekcija" ? "Dan "+k.br+" od 14" : "";
+  $("#m-telo").innerHTML = k.blokovi.map(blokHtml).join("");
+  $("#m-telo").scrollTop=0;
+  $("#modal").classList.add("vidi");
+  document.body.style.overflow="hidden";
+  $("#zatvori").focus();
+}
+
+/* modal */
+function otvori(id){
+  const l=LEKCIJE.find(x=>x.id===id); if(!l)return;
+  $("#m-oznaka").textContent=l.id+" · "+l.grupa;
+  $("#m-naslov").textContent=l.naslov;
+  $("#m-gr").textContent=l.gr;
+  let h="";
+  const par=([g,i,s])=>`<div class="par"><div class="g">${esc(g)}</div><div class="iz">${esc(i)}</div><div class="s">${esc(s)}</div></div>`;
+  if(l.cuti) h+=`<h4>Šta ćeš najčešće čuti</h4>`+l.cuti.map(par).join("");
+  if(l.recnik) h+=`<h4>Rečnik</h4><div class="rec">`+
+    l.recnik.map(([g,i,s])=>`<div class="g">${esc(g)}</div><div class="iz">${esc(i)}</div><div>${esc(s)}</div>`).join("")+`</div>`;
+  if(l.dijalog) h+=`<h4>Dijalog</h4><div class="dij">`+
+    l.dijalog.map(([g,iz,s],i)=>`<div class="replika ${i%2?'b':''}"><div class="g">${esc(g)}</div><div class="iz">${esc(iz)}</div><div class="s">${esc(s)}</div></div>`).join("")+`</div>`;
+  if(l.fraze) h+=`<h4>Korisne fraze</h4>`+l.fraze.map(par).join("");
+  if(l.napomena) h+=`<h4>Kako Grci zaista govore</h4><div class="napomena">${esc(l.napomena)}</div>`;
+  if(l.vezba) h+=`<h4>Mini vežba</h4><div class="vezba">`+
+    l.vezba.map(([p,o,iz])=>`<div class="zad"><div class="pit">${esc(p)}</div>
+      <button class="otkrij">Prikaži odgovor</button>
+      <div class="odg">${esc(o)}<div class="iz">${esc(iz)}</div></div></div>`).join("")+`</div>`;
+  $("#m-telo").innerHTML=h;
+  $("#m-telo").scrollTop=0;
+  $("#modal").classList.add("vidi");
+  document.body.style.overflow="hidden";
+  $("#zatvori").focus();
+}
+$("#m-telo").onclick=e=>{
+  const b=e.target.closest(".otkrij"); if(!b)return;
+  const o=b.nextElementSibling;
+  const otvoreno=o.classList.toggle("vidi");
+  b.textContent=otvoreno?"Sakrij odgovor":"Prikaži odgovor";
+};
+function zatvoriModal(){
+  $("#modal").classList.remove("vidi");
+  document.body.style.overflow="";
+}
+$("#zatvori").onclick=zatvoriModal;
+$("#modal").onclick=e=>{if(e.target===$("#modal"))zatvoriModal();};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")zatvoriModal();});
+
+/* kartice za učenje */
+let fond=[],idx=0,okrenuto=false;
+$("#btn-flip").onclick=()=>{
+  fond=LEKCIJE.flatMap(l=>(l.recnik||[]).map(([g,i,s])=>[g,i,s,l.naslov]))
+        .sort(()=>Math.random()-.5);
+  idx=0;okrenuto=false;
+  $("#m-oznaka").textContent="vežba";
+  $("#m-naslov").textContent="Kartice";
+  $("#m-gr").textContent="Prevedi na srpski, pa okreni karticu";
+  crtajKarticu();
+  $("#modal").classList.add("vidi");
+  document.body.style.overflow="hidden";
+};
+function crtajKarticu(){
+  const [g,iz,s,lek]=fond[idx];
+  $("#m-telo").innerHTML=`
+    <div class="karta-flip">
+      <div class="veliko">${esc(g)}</div>
+      <div class="malo">${okrenuto?esc(s)+" · "+esc(lek):"&nbsp;"}</div>
+      <div class="malo" style="font:400 15px 'IBM Plex Mono',monospace;color:var(--maslina)">${esc(iz)}</div>
+    </div>
+    <div class="flip-kontrole">
+      <button class="mini" id="f-okreni">${okrenuto?"Sakrij":"Okreni"}</button>
+      <button class="mini" id="f-dalje">Sledeća reč</button>
+    </div>
+    <div class="flip-brojac">${idx+1} / ${fond.length}</div>`;
+  $("#f-okreni").onclick=()=>{okrenuto=!okrenuto;crtajKarticu();};
+  $("#f-dalje").onclick=()=>{idx=(idx+1)%fond.length;okrenuto=false;crtajKarticu();};
+}
+
+crtajHero();
+crtaj();
+</script>
+</body>
+</html>
