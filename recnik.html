@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rečnik — Ελληνικά</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gips:#FBF9F4; --gips2:#F2EEE4;
+  --egej:#2E6FA7; --egej-svetlo:#DCE9F4;
+  --bugenvilija:#C6497B; --maslina:#6E7F4E;
+  --mastilo:#1E2A33; --tiho:#6B7A85;
+  --ivica:#E3DDD0; --r:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--gips);color:var(--mastilo);
+  font:400 16px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--egej)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+header{position:sticky;top:0;z-index:50;background:rgba(251,249,244,.92);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--ivica)}
+.hd{display:flex;align-items:center;gap:16px;padding:12px 0;flex-wrap:wrap}
+.logo{font:800 22px/1 Fraunces,serif;letter-spacing:-.02em;white-space:nowrap;text-decoration:none;color:var(--mastilo)}
+.logo span{color:var(--egej)}
+#q{flex:1;min-width:180px;border:1.5px solid var(--ivica);border-radius:999px;
+  padding:10px 16px;font:400 15px Inter,sans-serif;background:#fff;color:var(--mastilo)}
+#q:focus{outline:none;border-color:var(--egej);box-shadow:0 0 0 3px var(--egej-svetlo)}
+.mini{border:1.5px solid var(--ivica);background:#fff;border-radius:999px;
+  padding:9px 14px;font:500 14px Inter,sans-serif;color:var(--mastilo);cursor:pointer}
+.mini:hover{border-color:var(--egej);color:var(--egej)}
+.mini.on{background:var(--egej);border-color:var(--egej);color:#fff}
+.veze{display:flex;gap:8px;flex-wrap:wrap}
+
+.hero{padding:44px 0 30px;border-bottom:1px solid var(--ivica)}
+.hero h1{font:800 clamp(30px,5vw,46px)/1.05 Fraunces,serif;letter-spacing:-.03em;margin:0 0 12px}
+.hero h1 em{font-style:normal;color:var(--egej)}
+.hero p{font-size:17px;color:var(--tiho);max-width:56ch;margin:0 0 20px}
+.brojke{display:flex;gap:28px;flex-wrap:wrap}
+.brojka b{display:block;font:600 26px Fraunces,serif;color:var(--bugenvilija)}
+.brojka span{font-size:13px;color:var(--tiho);text-transform:uppercase;letter-spacing:.08em}
+
+.voc-alat{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:22px 0 10px}
+.voc-broj{font:500 13px 'IBM Plex Mono',monospace;color:var(--tiho);margin-left:auto}
+.voc-tema{background:#fff;border:1px solid var(--ivica);border-radius:var(--r);
+  margin-bottom:10px;overflow:hidden}
+.voc-tema summary{list-style:none;cursor:pointer;padding:15px 18px;
+  display:flex;align-items:center;gap:14px;font:600 16px Fraunces,serif}
+.voc-tema summary::-webkit-details-marker{display:none}
+.voc-tema summary:hover{color:var(--egej)}
+.voc-tema .vt-n{margin-left:auto;font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;
+  color:var(--egej);background:var(--egej-svetlo);padding:3px 9px;border-radius:6px}
+.voc-tema .vt-plus{color:var(--tiho);font-size:20px;line-height:1;transition:transform .25s}
+.voc-tema[open] .vt-plus{transform:rotate(45deg);color:var(--egej)}
+.voc-tema[open] summary{border-bottom:1px solid var(--ivica)}
+.voc-tab{width:100%;border-collapse:collapse;font-size:15px}
+.voc-tab td{padding:8px 18px;border-bottom:1px solid var(--gips2);vertical-align:top}
+.voc-tab tr:last-child td{border-bottom:none}
+.voc-tab tr:hover{background:var(--gips)}
+.voc-tab .v-gr{font-weight:600;color:var(--egej);width:36%}
+.voc-tab .v-iz{font:400 13px 'IBM Plex Mono',monospace;color:var(--maslina);width:28%}
+.voc-tab .v-sr{color:var(--mastilo)}
+.voc-prazno{padding:40px 0;text-align:center;color:var(--tiho)}
+mark{background:#FCE9A0;color:var(--mastilo);padding:0 2px;border-radius:3px}
+
+/* modal kartica */
+.pozadina{position:fixed;inset:0;background:rgba(30,42,51,.45);z-index:100;
+  display:none;align-items:flex-start;justify-content:center;padding:24px 12px;overflow-y:auto}
+.pozadina.vidi{display:flex}
+.list{background:var(--gips);border-radius:18px;max-width:560px;width:100%;
+  box-shadow:0 24px 60px rgba(30,42,51,.28);position:relative}
+.list-vrh{background:var(--gips);border-bottom:1px solid var(--ivica);
+  padding:22px 26px 16px;border-radius:18px 18px 0 0}
+.list-vrh h2{font:800 26px/1.1 Fraunces,serif;margin:8px 0 2px;letter-spacing:-.02em}
+.list-vrh .gr{color:var(--bugenvilija);font-size:15px;margin:0}
+.zatvori{position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--ivica);background:#fff;cursor:pointer;font-size:18px;color:var(--tiho);line-height:1}
+.zatvori:hover{border-color:var(--bugenvilija);color:var(--bugenvilija)}
+.telo{padding:16px 26px 30px}
+.oznaka{display:inline-block;font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;
+  color:var(--egej);background:var(--egej-svetlo);padding:3px 8px;border-radius:6px}
+.karta-flip{background:#fff;border:1px solid var(--ivica);border-radius:14px;
+  padding:22px 18px;text-align:center;min-height:130px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.karta-flip .veliko{font:600 22px Inter,system-ui,sans-serif;color:var(--egej);line-height:1.3;letter-spacing:-.01em}
+.karta-flip .malo{font-size:15px;color:var(--tiho);min-height:20px}
+.smer-red{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:12px;font-size:13px;color:var(--tiho)}
+.smer-grupa{display:inline-flex;border:1px solid var(--ivica);border-radius:999px;overflow:hidden}
+.smer-grupa button{border:none;background:#fff;padding:7px 15px;cursor:pointer;
+  font:600 13px Inter,sans-serif;color:var(--tiho);transition:.15s}
+.smer-grupa button.on{background:var(--egej);color:#fff}
+.flip-kontrole{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.flip-brojac{text-align:center;font:500 13px 'IBM Plex Mono',monospace;color:var(--tiho);margin-top:10px}
+.tema-izbor{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+.tema-izbor button{border:1px solid var(--ivica);background:#fff;border-radius:999px;
+  padding:5px 11px;font:500 12px Inter,sans-serif;color:var(--tiho);cursor:pointer}
+.tema-izbor button.on{background:var(--egej);border-color:var(--egej);color:#fff}
+
+footer{border-top:1px solid var(--ivica);padding:30px 0 44px;color:var(--tiho);font-size:14px}
+@media(max-width:560px){
+  .voc-tab td{padding:7px 12px;font-size:14px}
+  .voc-tab .v-iz{display:none}
+  .voc-tab .v-gr{width:45%}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hd">
+    <a class="logo" href="index.html">Ελληνικά<span>.</span></a>
+    <input id="q" type="search" placeholder="Traži reč — npr. račun, νερό, plaža" aria-label="Pretraga">
+    <div class="veze">
+      <a class="mini" href="index.html">Kurs</a>
+      <button class="mini" id="btn-flip">Kartice</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Rečnik <em>po temama</em>.</h1>
+    <p>Sve reči iz kursa i iz 24 situacije, plus tematski dodatak — pozdravi, brojevi, glagoli, telo, priroda. Otvori temu da vidiš spisak, ili pretraži na srpskom i grčkom.</p>
+    <div class="brojke" id="brojke"></div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="voc-alat">
+    <button class="mini" id="voc-otvori">Otvori sve</button>
+    <button class="mini" id="voc-zatvori">Zatvori sve</button>
+    <span class="voc-broj" id="voc-broj"></span>
+  </div>
+  <div id="voc-lista" style="padding-bottom:60px"></div>
+</div>
+
+<footer class="wrap">
+  Praktični kurs grčkog jezika · rečnik i kartice · <a href="index.html">nazad na kurs</a>
+</footer>
+
+<div class="pozadina" id="modal">
+  <div class="list" role="dialog" aria-modal="true">
+    <div class="list-vrh">
+      <button class="zatvori" id="zatvori" aria-label="Zatvori">✕</button>
+      <span class="oznaka">vežba</span>
+      <h2>Kartice</h2>
+      <p class="gr" id="m-gr"></p>
+    </div>
+    <div class="telo" id="m-telo"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════ REČNIK ══════════ */
+const RECNIK = {
+
+"Pozdravi i učtivost": [
+["καλημέρα","kaliméra","dobro jutro / dobar dan"],
+["καλησπέρα","kalispéra","dobro veče"],
+["καληνύχτα","kaliníhta","laku noć"],
+["γεια σου","ja su","zdravo (neformalno)"],
+["γεια σας","ja sas","zdravo (formalno)"],
+["χαίρετε","hérete","zdravo (neutralno)"],
+["αντίο","adío","zbogom"],
+["τα λέμε","ta léme","vidimo se"],
+["καλώς ήρθατε","kalós írthate","dobrodošli"],
+["ευχαριστώ","efharistó","hvala"],
+["ευχαριστώ πολύ","efharistó polí","hvala mnogo"],
+["παρακαλώ","parakaló","molim / izvolite"],
+["συγγνώμη","signómi","izvinite"],
+["ναι","ne","da"],
+["όχι","óhi","ne"],
+["εντάξει","endáksi","u redu"],
+["χαίρω πολύ","héro polí","drago mi je"],
+["καλή όρεξη","kalí óreksi","prijatno"],
+["στην υγειά μας","stin ijiá mas","živeli"],
+["καλό ταξίδι","kaló taksídi","srećan put"],
+["καλή διαμονή","kalí diamoní","prijatan boravak"],
+["βεβαίως","vevéos","naravno"],
+["ορίστε","oríste","izvolite"],
+["καλή σας μέρα","kalí sas méra","prijatan dan"]
+],
+
+"Osnovne reči": [
+["εγώ","egó","ja"],["εσύ","esí","ti"],
+["αυτός","aftós","on"],["αυτή","aftí","ona"],
+["εμείς","emís","mi"],["εσείς","esís","vi"],
+["και","ke","i"],["ή","i","ili"],
+["αλλά","alá","ali"],["γιατί","jatí","zašto / jer"],
+["με","me","sa"],["χωρίς","horís","bez"],
+["για","ja","za"],["από","apó","iz, od"],
+["πολύ","polí","mnogo / vrlo"],["λίγο","lígo","malo"],
+["όλα","óla","sve"],["κάτι","káti","nešto"],
+["τίποτα άλλο","típota álo","ništa drugo"],
+["μόνο","móno","samo"],
+["ακόμα","akóma","još"],["πάλι","páli","opet"],
+["τώρα","tóra","sada"],["μετά","metá","posle"],
+["εδώ","edó","ovde"],["εκεί","ekí","tamo"],
+["μαζί","mazí","zajedno"],["επίσης","epísis","takođe"]
+],
+
+"Pitanja i sporazumevanje": [
+["τι;","ti","šta?"],["ποιος;","piós","ko?"],
+["πού;","pu","gde?"],["πότε;","póte","kada?"],
+["γιατί;","jatí","zašto?"],["πώς;","pos","kako?"],
+["πόσο;","póso","koliko?"],["ποιο;","pió","koji?"],
+["πόσο κάνει;","póso káni","koliko košta?"],
+["τι ώρα είναι;","ti óra íne","koliko je sati?"],
+["πού είναι;","pu íne","gde je?"],
+["μιλάτε αγγλικά;","miláte angliká","govorite li engleski?"],
+["δεν καταλαβαίνω","den katalavéno","ne razumem"],
+["πιο αργά, παρακαλώ","pjo argá parakaló","sporije, molim"],
+["τι σημαίνει;","ti siméni","šta znači?"],
+["μπορείτε να το επαναλάβετε;","boríte na to epanalávete","možete li ponoviti?"],
+["πώς το λένε στα ελληνικά;","pos to léne sta eliniká","kako se kaže na grčkom?"],
+["μπορείτε να με βοηθήσετε;","boríte na me voithísete","možete li mi pomoći?"],
+["μαθαίνω ελληνικά","mathéno eliniká","učim grčki"]
+],
+
+"Ljudi i porodica": [
+["ο άνθρωπος","o ánthropos","čovek"],
+["ο άντρας","o ándras","muškarac / muž"],
+["η γυναίκα","i jinéka","žena"],
+["το παιδί","to pedí","dete"],
+["τα παιδιά","ta pediá","deca"],
+["ο πατέρας","o patéras","otac"],
+["η μητέρα","i mitéra","majka"],
+["ο αδελφός","o adelfós","brat"],
+["η αδελφή","i adelfí","sestra"],
+["ο γιος","o jos","sin"],
+["η κόρη","i kóri","ćerka"],
+["οι γονείς","i gonís","roditelji"],
+["ο παππούς","o papús","deda"],
+["η γιαγιά","i jajá","baka"],
+["ο φίλος","o fílos","prijatelj"],
+["η φίλη","i fíli","prijateljica"],
+["το όνομα","to ónoma","ime"],
+["ο κύριος","o kírios","gospodin"],
+["η κυρία","i kiría","gospođa"],
+["πώς σε λένε;","pos se léne","kako se zoveš?"],
+["από πού είσαι;","apó pu íse","odakle si?"],
+["η Σερβία","i Servía","Srbija"]
+],
+
+"Brojevi": [
+["ένα","éna","jedan"],["δύο","dío","dva"],
+["τρία","tría","tri"],["τέσσερα","tésera","četiri"],
+["πέντε","pénde","pet"],["έξι","éksi","šest"],
+["εφτά","eftá","sedam"],["οχτώ","ohtó","osam"],
+["εννιά","enjá","devet"],["δέκα","déka","deset"],
+["έντεκα","éndeka","jedanaest"],["δώδεκα","dódeka","dvanaest"],
+["δεκατρία","dekatría","trinaest"],["δεκαπέντε","dekapénde","petnaest"],
+["είκοσι","íkosi","dvadeset"],["τριάντα","triánda","trideset"],
+["σαράντα","saránda","četrdeset"],["πενήντα","penínda","pedeset"],
+["εξήντα","eksínda","šezdeset"],["εβδομήντα","evdomínda","sedamdeset"],
+["ογδόντα","ogdónda","osamdeset"],["ενενήντα","enenínda","devedeset"],
+["εκατό","ekató","sto"],["διακόσια","diakósia","dvesta"],
+["χίλια","hília","hiljadu"],["μισό","misó","pola"],
+["το κιλό","to kiló","kilogram"],["το μισό κιλό","to misó kiló","pola kilograma"],
+["πρώτος","prótos","prvi"],["δεύτερος","défteros","drugi"]
+],
+
+"Vreme i dani": [
+["η ώρα","i óra","sat / vreme"],
+["το λεπτό","to leptó","minut"],
+["η μέρα","i méra","dan"],
+["η εβδομάδα","i evdomáda","nedelja (7 dana)"],
+["ο μήνας","o mínas","mesec"],
+["ο χρόνος","o hrónos","godina / vreme"],
+["σήμερα","símera","danas"],
+["αύριο","ávrio","sutra"],
+["χθες","hthes","juče"],
+["το πρωί","to proí","jutro"],
+["το μεσημέρι","to mesiméri","podne"],
+["το απόγευμα","to apójevma","popodne"],
+["το βράδυ","to vrádi","veče"],
+["η νύχτα","i níhta","noć"],
+["Δευτέρα","deftéra","ponedeljak"],
+["Τρίτη","tríti","utorak"],
+["Τετάρτη","tetárti","sreda"],
+["Πέμπτη","pémpti","četvrtak"],
+["Παρασκευή","paraskeví","petak"],
+["Σάββατο","sávato","subota"],
+["Κυριακή","kiriakí","nedelja (dan)"],
+["το καλοκαίρι","to kalokéri","leto"],
+["ο χειμώνας","o himónas","zima"],
+["οι διακοπές","i diakopés","odmor"]
+],
+
+"Hrana i piće": [
+["το ψωμί","to psomí","hleb"],
+["το νερό","to neró","voda"],
+["το γάλα","to gála","mleko"],
+["το τυρί","to tirí","sir"],
+["η φέτα","i féta","feta sir"],
+["τα αυγά","ta avgá","jaja"],
+["το κρέας","to kréas","meso"],
+["το κοτόπουλο","to kotópulo","piletina"],
+["το χοιρινό","to hirinó","svinjetina"],
+["το ψάρι","to psári","riba"],
+["η σαλάτα","i saláta","salata"],
+["η χωριάτικη σαλάτα","i horiátiki saláta","grčka salata"],
+["το τζατζίκι","to dzadzíki","caciki"],
+["ο γύρος","o jíros","giros"],
+["οι πατάτες","i patátes","pomfrit / krompir"],
+["η ντομάτα","i domáta","paradajz"],
+["το αγγούρι","to angúri","krastavac"],
+["το κρεμμύδι","to kremídi","luk"],
+["οι ελιές","i eliés","masline"],
+["το ελαιόλαδο","to eleóladho","maslinovo ulje"],
+["το μέλι","to méli","med"],
+["η ζάχαρη","i záhari","šećer"],
+["το αλάτι","to aláti","so"],
+["τα φρούτα","ta frúta","voće"],
+["το μήλο","to mílo","jabuka"],
+["το πορτοκάλι","to portokáli","pomorandža"],
+["το σταφύλι","to stafíli","grožđe"],
+["το καρπούζι","to karpúzi","lubenica"],
+["ο καφές","o kafés","kafa"],
+["ελληνικός καφές","elinikós kafés","grčka kafa"],
+["φρέντο εσπρέσο","frédo espréso","freddo espresso"],
+["το τσάι","to tsái","čaj"],
+["ο χυμός","o himós","sok"],
+["η μπίρα","i bíra","pivo"],
+["το κρασί","to krasí","vino"],
+["το παγωτό","to pagotó","sladoled"],
+["η τυρόπιτα","i tirópita","pita sa sirom"],
+["το κουλούρι","to kulúri","đevrek sa susamom"],
+["ο μπακλαβάς","o baklavás","baklava"]
+],
+
+"Restoran i kafić": [
+["το εστιατόριο","to estiatório","restoran"],
+["η ταβέρνα","i tavérna","taverna"],
+["η καφετέρια","i kafetéria","kafić"],
+["ο κατάλογος","o katálogos","jelovnik"],
+["το τραπέζι","to trapézi","sto"],
+["το ορεκτικό","to orektikó","predjelo"],
+["το κυρίως πιάτο","to kiríos piáto","glavno jelo"],
+["το επιδόρπιο","to epidórpio","desert"],
+["ο λογαριασμός","o logariazmós","račun"],
+["η κράτηση","i krátisi","rezervacija"],
+["τι προτείνετε;","ti protínete","šta preporučujete?"],
+["χωρίς κρεμμύδι","horís kremídi","bez luka"],
+["χωρίς γλουτένη","horís gluténi","bez glutena"],
+["είμαι χορτοφάγος","íme hortofágos","vegetarijanac sam"],
+["ήταν πολύ νόστιμο","ítan polí nóstimo","bilo je veoma ukusno"],
+["τον λογαριασμό, παρακαλώ","ton logariazmó parakaló","račun, molim"],
+["για εδώ ή για έξω;","ja edó i ja ékso","za ovde ili za poneti?"],
+["κάτι άλλο;","káti álo","još nešto?"]
+],
+
+"Kupovina i novac": [
+["η τιμή","i timí","cena"],
+["τα λεφτά","ta leftá","novac"],
+["το ευρώ","to evró","evro"],
+["η κάρτα","i kárta","kartica"],
+["τα μετρητά","ta metritá","gotovina"],
+["η απόδειξη","i apódiksi","fiskalni račun"],
+["η σακούλα","i sakúla","kesa"],
+["η προσφορά","i prosforá","akcija"],
+["το ΑΤΜ","to éj-ti-em","bankomat"],
+["ακριβό","akrivó","skupo"],
+["φθηνό","fthinó","jeftino"],
+["το σούπερ μάρκετ","to súper márket","supermarket"],
+["ο φούρνος","o fúrnos","pekara"],
+["η λαϊκή αγορά","i laikí agorá","pijaca"],
+["το φαρμακείο","to farmakío","apoteka"],
+["το περίπτερο","to períptero","kiosk"],
+["δέχεστε κάρτες;","déheste kártes","primate li kartice?"],
+["το μέγεθος","to méjethos","veličina"],
+["το δοκιμαστήριο","to dokimastírio","kabina za probu"],
+["το σουβενίρ","to suvenír","suvenir"]
+],
+
+"Smeštaj": [
+["το ξενοδοχείο","to ksenodohío","hotel"],
+["το διαμέρισμα","to diamérizma","apartman"],
+["η ρεσεψιόν","i resepsión","recepcija"],
+["το δωμάτιο","to domátio","soba"],
+["το κλειδί","to klidí","ključ"],
+["το πρωινό","to proinó","doručak"],
+["το μπάνιο","to bánio","kupatilo"],
+["η κουζίνα","i kuzína","kuhinja"],
+["το μπαλκόνι","to balkóni","balkon"],
+["η πετσέτα","i petséta","peškir"],
+["η κουβέρτα","i kuvérta","ćebe"],
+["το κλιματιστικό","to klimatistikó","klima uređaj"],
+["το ζεστό νερό","to zestó neró","topla voda"],
+["ο ανελκυστήρας","o anelkistíras","lift"],
+["η πισίνα","i pisína","bazen"],
+["το διαβατήριο","to diavatírio","pasoš"],
+["δεν λειτουργεί","den liturgí","ne radi"],
+["η αναχώρηση","i anahórisi","odjava / odlazak"]
+],
+
+"Prevoz": [
+["το αυτοκίνητο","to aftokínito","automobil"],
+["το λεωφορείο","to leoforío","autobus"],
+["το ταξί","to taksí","taksi"],
+["το πλοίο","to plío","brod / trajekt"],
+["το εισιτήριο","to isitírio","karta"],
+["η στάση","i stási","stajalište"],
+["ο σταθμός","o stathmós","stanica"],
+["το λιμάνι","to limáni","luka"],
+["το αεροδρόμιο","to aerodrómio","aerodrom"],
+["ο οδηγός","o odigós","vozač"],
+["η διεύθυνση","i dhiéfthinsi","adresa"],
+["η βενζίνη","i venzíni","benzin"],
+["το πετρέλαιο","to petréleo","dizel"],
+["το ρεζερβουάρ","to rezervuár","rezervoar"],
+["γεμάτο","jemáto","pun"],
+["το πάρκινγκ","to párking","parking"],
+["η ασφάλεια","i asfália","osiguranje"],
+["το δίπλωμα οδήγησης","to díploma odíjisis","vozačka dozvola"],
+["πότε φεύγει;","póte févji","kada polazi?"],
+["πού πρέπει να κατέβω;","pu prépi na katévo","gde treba da siđem?"]
+],
+
+"Plaža i more": [
+["η παραλία","i paralía","plaža"],
+["η θάλασσα","i thálasa","more"],
+["η ξαπλώστρα","i ksaplóstra","ležaljka"],
+["η ομπρέλα","i ombréla","suncobran"],
+["η άμμος","i ámos","pesak"],
+["τα βότσαλα","ta vótsala","obluci"],
+["το κύμα","to kíma","talas"],
+["η σκιά","i skiá","hlad"],
+["ο ήλιος","o ílios","sunce"],
+["η μέδουσα","i méduza","meduza"],
+["ο ναυαγοσώστης","o navagosóstis","spasilac"],
+["το νησί","to nisí","ostrvo"],
+["το ντους","to dus","tuš"],
+["η αντηλιακή κρέμα","i andiliakí kréma","krema za sunčanje"],
+["είναι ελεύθερες;","íne eléftheres","da li su slobodne?"],
+["η θάλασσα είναι ήρεμη","i thálasa íne íremi","more je mirno"]
+],
+
+"Priroda i prognoza": [
+["ο καιρός","o kerós","vreme (prognoza)"],
+["η βροχή","i vrohí","kiša"],
+["ο άνεμος","o ánemos","vetar"],
+["το σύννεφο","to sínefo","oblak"],
+["ζέστη","zésti","vrućina"],
+["κρύο","krío","hladnoća"],
+["το βουνό","to vunó","planina"],
+["ο ουρανός","o uranós","nebo"],
+["το δέντρο","to déndro","drvo"],
+["το λουλούδι","to lulúdi","cvet"],
+["η φύση","i físi","priroda"],
+["ο κήπος","o kípos","bašta"],
+["το ζώο","to zóo","životinja"],
+["ο σκύλος","o skílos","pas"],
+["η γάτα","i gáta","mačka"],
+["κάνει ζέστη","káni zésti","toplo je"],
+["κάνει κρύο","káni krío","hladno je"],
+["βρέχει","vréhi","pada kiša"]
+],
+
+"Boje i osobine": [
+["άσπρο","áspro","belo"],["μαύρο","mávro","crno"],
+["κόκκινο","kókino","crveno"],["μπλε","ble","plavo"],
+["πράσινο","prásino","zeleno"],["κίτρινο","kítrino","žuto"],
+["καφέ","kafé","braon"],["γκρι","gri","sivo"],
+["καλός","kalós","dobar"],["κακός","kakós","loš"],
+["μεγάλος","megálos","velik"],["μικρός","mikrós","mali"],
+["καινούριος","kenúrios","nov"],["παλιός","paliós","star"],
+["ακριβός","akrivós","skup"],["φθηνός","fthinós","jeftin"],
+["ζεστός","zestós","topao"],["κρύος","kríos","hladan"],
+["ωραίος","oréos","lep"],["νόστιμος","nóstimos","ukusan"],
+["φρέσκος","fréskos","svež"],["ανοιχτό","anihtó","otvoreno"],
+["κλειστό","klistó","zatvoreno"],["εύκολο","éfkolo","lako"],
+["δύσκολο","dískolo","teško"],["γρήγορα","grígora","brzo"],
+["σιγά","sigá","polako"]
+],
+
+"Glagoli — najčešći": [
+["είμαι","íme","biti"],["έχω","ého","imati"],
+["θέλω","thélo","hteti"],["μπορώ","boró","moći"],
+["πρέπει","prépi","morati"],["ξέρω","ksero","znati"],
+["καταλαβαίνω","katalavéno","razumeti"],
+["μιλώ","miló","govoriti"],["λέω","léo","reći"],
+["ρωτώ","rotó","pitati"],["απαντώ","apandó","odgovoriti"],
+["πάω","páo","ići"],["έρχομαι","érhome","dolaziti"],
+["φεύγω","févgo","odlaziti"],["μένω","méno","stanovati"],
+["τρώω","tróo","jesti"],["πίνω","píno","piti"],
+["αγοράζω","agorázo","kupovati"],["πληρώνω","pliróno","plaćati"],
+["βλέπω","vlépo","videti"],["ακούω","akúo","slušati"],
+["διαβάζω","diavázo","čitati"],["γράφω","gráfo","pisati"],
+["δουλεύω","dulévo","raditi"],["περιμένω","periméno","čekati"],
+["ψάχνω","psáhno","tražiti"],["βρίσκω","vrísko","naći"],
+["δίνω","díno","dati"],["παίρνω","pérno","uzeti"],
+["ανοίγω","anígo","otvoriti"],["κλείνω","klíno","zatvoriti"],
+["κοιμάμαι","kimáme","spavati"],["μαθαίνω","mathéno","učiti"],
+["βοηθώ","voithó","pomoći"],["μου αρέσει","mu arési","sviđa mi se"],
+["δοκιμάζω","dokimázo","probati"],["χάνω","háno","izgubiti"]
+],
+
+"Telo i zdravlje": [
+["το σώμα","to sóma","telo"],
+["το κεφάλι","to kefáli","glava"],
+["το μάτι","to máti","oko"],
+["το αυτί","to aftí","uvo"],
+["το στόμα","to stóma","usta"],
+["το δόντι","to dóndi","zub"],
+["ο λαιμός","o lemós","grlo"],
+["το χέρι","to héri","ruka"],
+["το πόδι","to pódi","noga"],
+["η πλάτη","i pláti","leđa"],
+["το στομάχι","to stomáhi","stomak"],
+["η καρδιά","i kardiá","srce"],
+["ο πόνος","o pónos","bol"],
+["πονάει","ponái","boli"],
+["άρρωστος","árostos","bolestan"],
+["ο πυρετός","o piretós","temperatura"],
+["ο πονοκέφαλος","o ponokéfalos","glavobolja"],
+["το κρυολόγημα","to kriolójima","prehlada"],
+["ο βήχας","o víhas","kašalj"],
+["η αλλεργία","i alerjía","alergija"],
+["το φάρμακο","to fármako","lek"],
+["το παυσίπονο","to pafsípono","lek protiv bolova"],
+["η συνταγή","i sindají","recept"],
+["κουρασμένος","kurazménos","umoran"]
+],
+
+"Grad i mesta": [
+["η πόλη","i póli","grad"],
+["το χωριό","to horió","selo"],
+["το κέντρο","to kéndro","centar"],
+["ο δρόμος","o drómos","ulica"],
+["η πλατεία","i platía","trg"],
+["το σπίτι","to spíti","kuća"],
+["η εκκλησία","i eklisía","crkva"],
+["το μουσείο","to musío","muzej"],
+["η τράπεζα","i trápeza","banka"],
+["το ταχυδρομείο","to tahidromío","pošta"],
+["το νοσοκομείο","to nosokomío","bolnica"],
+["η αστυνομία","i astinomía","policija"],
+["το κατάστημα","to katástima","radnja"],
+["η είσοδος","i ísodos","ulaz"],
+["η έξοδος","i éksodos","izlaz"],
+["η τουαλέτα","i tualéta","toalet"],
+["το πάρκο","to párko","park"]
+],
+
+"Snalaženje": [
+["δεξιά","deksiá","desno"],
+["αριστερά","aristerá","levo"],
+["ευθεία","efthía","pravo"],
+["πίσω","píso","iza / nazad"],
+["μπροστά","brostá","ispred"],
+["κοντά","kondá","blizu"],
+["μακριά","makriá","daleko"],
+["πάνω","páno","gore"],
+["κάτω","káto","dole"],
+["μέσα","mésa","unutra"],
+["έξω","ékso","napolju"],
+["δίπλα","dípla","pored"],
+["απέναντι","apénandi","preko puta"],
+["η γωνία","i gonía","ugao"],
+["ο χάρτης","o hártis","mapa"],
+["χάθηκα","háthika","izgubio sam se"],
+["πηγαίνετε ευθεία","pigénete efthía","idite pravo"],
+["είναι μακριά;","íne makriá","da li je daleko?"],
+["μπορείτε να μου δείξετε;","boríte na mu díksete","možete li mi pokazati?"]
+],
+
+"Telefon i internet": [
+["το κινητό","to kinitó","mobilni telefon"],
+["η κάρτα SIM","i kárta sim","SIM kartica"],
+["το διαδίκτυο","to diadíktio","internet"],
+["τα δεδομένα","ta dedhoména","mobilni podaci"],
+["η φόρτιση","i fórtisi","dopuna / punjenje"],
+["το Wi-Fi","to vájfaj","Wi-Fi"],
+["ο κωδικός","o kodikós","lozinka / kod"],
+["δωρεάν","doreán","besplatno"]
+],
+
+"Hitne situacije": [
+["βοήθεια!","voíthia","upomoć!"],
+["προσοχή!","prosohí","pažnja!"],
+["κίνδυνος","kíndinos","opasnost"],
+["γρήγορα!","grígora","brzo!"],
+["ο γιατρός","o jatrós","lekar"],
+["το ασθενοφόρο","to asthenofóro","hitna pomoć"],
+["η πυροσβεστική","i pirozvestikí","vatrogasci"],
+["το ατύχημα","to atíhima","nesreća"],
+["η φωτιά","i fotiá","požar"],
+["ο κλέφτης","o kléftis","lopov"],
+["έχασα","éhasa","izgubio sam"],
+["το πορτοφόλι","to portofóli","novčanik"],
+["καλέστε την αστυνομία","kaléste tin astinomía","zovite policiju"],
+["καλέστε ασθενοφόρο","kaléste asthenofóro","zovite hitnu pomoć"],
+["χρειάζομαι γιατρό","hriázome jatró","treba mi lekar"],
+["112","","jedinstveni broj za hitne slučajeve"]
+]
+
+};
+
+/* ══════════ POMOĆNE ══════════ */
+const $ = s => document.querySelector(s);
+const esc = t => String(t).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const norm = t => String(t).toLowerCase()
+  .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .replace(/[čć]/g,"c").replace(/š/g,"s").replace(/ž/g,"z").replace(/đ/g,"dj")
+  .replace(/ς/g,"σ");
+
+const TEME = Object.keys(RECNIK);
+const UKUPNO = TEME.reduce((n,t) => n + RECNIK[t].length, 0);
+let upit = "";
+
+$("#brojke").innerHTML = [
+  [UKUPNO, "reči"], [TEME.length, "tema"], [24, "situacije"]
+].map(([b,s]) => `<div class="brojka"><b>${b}</b><span>${s}</span></div>`).join("");
+
+/* ══════════ ISCRTAVANJE ══════════ */
+function istakni(s, q){
+  if(!q) return esc(s);
+  const n = norm(s), i = n.indexOf(q);
+  if(i < 0) return esc(s);
+  return esc(s.slice(0,i)) + '<mark>' + esc(s.slice(i, i+q.length)) + '</mark>' + esc(s.slice(i+q.length));
+}
+
+function crtajRecnik(){
+  let html = '', ukupno = 0;
+  TEME.forEach(tema => {
+    const redovi = RECNIK[tema].filter(r => !upit || norm(r.join(' ')).includes(upit));
+    if(!redovi.length) return;
+    ukupno += redovi.length;
+    html += `<details class="voc-tema"${upit ? ' open' : ''}>`;
+    html += `<summary>${esc(tema)}<span class="vt-n">${redovi.length}</span><span class="vt-plus">+</span></summary>`;
+    html += `<table class="voc-tab"><tbody>`;
+    redovi.forEach(([g, iz, s]) => {
+      html += `<tr><td class="v-gr">${istakni(g, upit)}</td>`
+           +  `<td class="v-iz">${esc(iz || '')}</td>`
+           +  `<td class="v-sr">${istakni(s || '', upit)}</td></tr>`;
+    });
+    html += `</tbody></table></details>`;
+  });
+  $("#voc-lista").innerHTML = html || `<p class="voc-prazno">Ništa za „${esc($("#q").value)}“.</p>`;
+  $("#voc-broj").textContent = upit ? `${ukupno} rezultata` : `${ukupno} reči · ${TEME.length} tema`;
+}
+
+$("#q").oninput = e => { upit = norm(e.target.value.trim()); crtajRecnik(); };
+$("#voc-otvori").onclick  = () => document.querySelectorAll('#voc-lista details').forEach(d => d.open = true);
+$("#voc-zatvori").onclick = () => document.querySelectorAll('#voc-lista details').forEach(d => d.open = false);
+
+/* ══════════ KARTICE ══════════ */
+let fond = [], idx = 0, okrenuto = false, smer = 'GR', temaFiltar = 'sve';
+
+function napuniFond(){
+  const izvor = temaFiltar === 'sve'
+    ? TEME.flatMap(t => RECNIK[t].map(([g,i,s]) => [g,i,s,t]))
+    : RECNIK[temaFiltar].map(([g,i,s]) => [g,i,s,temaFiltar]);
+  fond = izvor.sort(() => Math.random() - .5);
+  idx = 0; okrenuto = false;
+}
+
+$("#btn-flip").onclick = () => {
+  napuniFond();
+  $("#modal").classList.add("vidi");
+  document.body.style.overflow = "hidden";
+  crtajKarticu();
+};
+
+function crtajKarticu(){
+  if(!fond.length){ $("#m-telo").innerHTML = '<p class="voc-prazno">Nema reči.</p>'; return; }
+  const [g, iz, s, tema] = fond[idx];
+  const lice    = smer === 'GR' ? g : s;
+  const nalicje = smer === 'GR' ? s : g;
+  const pomoc   = smer === 'GR' ? iz : (okrenuto ? iz : '');
+  $("#m-gr").textContent = fond.length + ' reči' + (temaFiltar==='sve' ? ' iz celog rečnika' : ' · ' + temaFiltar);
+
+  $("#m-telo").innerHTML = `
+    <div class="smer-red">
+      <span>Smer:</span>
+      <span class="smer-grupa">
+        <button id="s-gr" class="${smer==='GR'?'on':''}">GR → SR</button>
+        <button id="s-sr" class="${smer==='SR'?'on':''}">SR → GR</button>
+      </span>
+    </div>
+    <div class="tema-izbor">
+      <button data-t="sve" class="${temaFiltar==='sve'?'on':''}">sve teme</button>
+      ${TEME.map(t=>`<button data-t="${esc(t)}" class="${temaFiltar===t?'on':''}">${esc(t)}</button>`).join('')}
+    </div>
+    <div class="karta-flip">
+      <div class="veliko">${esc(lice)}</div>
+      <div class="malo">${okrenuto ? esc(nalicje) + ' · ' + esc(tema) : '&nbsp;'}</div>
+      <div class="malo" style="font:400 13px 'IBM Plex Mono',monospace;color:var(--maslina)">${esc(pomoc || '')}</div>
+    </div>
+    <div class="flip-kontrole">
+      <button class="mini" id="f-okreni">${okrenuto ? 'Sakrij' : 'Okreni'}</button>
+      <button class="mini" id="f-nazad">← Nazad</button>
+      <button class="mini" id="f-dalje">Dalje →</button>
+      <button class="mini" id="f-mesaj">Promešaj</button>
+    </div>
+    <div class="flip-brojac">${idx+1} / ${fond.length}</div>`;
+
+  $("#f-okreni").onclick = () => { okrenuto = !okrenuto; crtajKarticu(); };
+  $("#f-dalje").onclick  = () => { idx = (idx+1) % fond.length; okrenuto = false; crtajKarticu(); };
+  $("#f-nazad").onclick  = () => { idx = (idx-1+fond.length) % fond.length; okrenuto = false; crtajKarticu(); };
+  $("#f-mesaj").onclick  = () => { fond.sort(() => Math.random()-.5); idx = 0; okrenuto = false; crtajKarticu(); };
+  $("#s-gr").onclick = () => { smer='GR'; okrenuto=false; crtajKarticu(); };
+  $("#s-sr").onclick = () => { smer='SR'; okrenuto=false; crtajKarticu(); };
+  document.querySelectorAll('.tema-izbor button').forEach(b => {
+    b.onclick = () => { temaFiltar = b.dataset.t; napuniFond(); crtajKarticu(); };
+  });
+}
+
+function zatvoriModal(){
+  $("#modal").classList.remove("vidi");
+  document.body.style.overflow = "";
+}
+$("#zatvori").onclick = zatvoriModal;
+$("#modal").onclick = e => { if(e.target === $("#modal")) zatvoriModal(); };
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape") zatvoriModal();
+  if(!$("#modal").classList.contains("vidi")) return;
+  if(e.key === "ArrowRight" && fond.length){ idx=(idx+1)%fond.length; okrenuto=false; crtajKarticu(); }
+  if(e.key === "ArrowLeft"  && fond.length){ idx=(idx-1+fond.length)%fond.length; okrenuto=false; crtajKarticu(); }
+  if(e.key === " " && fond.length){ e.preventDefault(); okrenuto=!okrenuto; crtajKarticu(); }
+});
+
+crtajRecnik();
+</script>
+</body>
+</html>
