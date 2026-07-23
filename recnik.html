@@ -102,6 +102,30 @@ mark{background:#FCE9A0;color:var(--mastilo);padding:0 2px;border-radius:3px}
 .tema-izbor button.on{background:var(--egej);border-color:var(--egej);color:#fff}
 
 footer{border-top:1px solid var(--ivica);padding:30px 0 44px;color:var(--tiho);font-size:14px}
+
+/* ── brze fraze ── */
+.fr-tema{background:#fff;border:1px solid var(--ivica);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.fr-tema summary{list-style:none;cursor:pointer;padding:15px 18px;display:flex;align-items:center;gap:14px;font:600 16px Fraunces,serif}
+.fr-tema summary::-webkit-details-marker{display:none}
+.fr-tema summary:hover{color:var(--egej)}
+.fr-tema .vt-n{margin-left:auto;font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;color:var(--bugenvilija);background:#F6E4EC;padding:3px 9px;border-radius:6px}
+.fr-tema .vt-plus{color:var(--tiho);font-size:20px;line-height:1;transition:transform .25s}
+.fr-tema[open] .vt-plus{transform:rotate(45deg);color:var(--egej)}
+.fr-tema[open] summary{border-bottom:1px solid var(--ivica)}
+.fr-blok{padding:14px 18px;border-bottom:1px solid var(--gips2)}
+.fr-blok:last-child{border-bottom:none}
+.fr-glava{margin-bottom:9px}
+.fr-gr{font:600 17px Inter,sans-serif;color:var(--egej)}
+.fr-iz{font:400 13px 'IBM Plex Mono',monospace;color:var(--maslina);margin:2px 0}
+.fr-sr{font-size:15px;color:var(--mastilo);font-weight:500}
+.fr-prim{border-left:2px solid var(--egej-svetlo);padding:7px 0 7px 14px;margin:8px 0 0 2px}
+.fr-prim .p-gr{font-size:14.5px;color:var(--mastilo)}
+.fr-prim .p-iz{font:400 12.5px 'IBM Plex Mono',monospace;color:var(--maslina)}
+.fr-prim .p-sr{font-size:13.5px;color:var(--tiho)}
+.podnavi{display:flex;gap:6px;background:var(--gips2);padding:4px;border-radius:999px;width:fit-content;margin:22px 0 4px}
+.podnavi button{border:none;background:none;border-radius:999px;padding:8px 18px;cursor:pointer;font:600 14px Inter,sans-serif;color:var(--tiho);white-space:nowrap}
+.podnavi button.on{background:#fff;color:var(--egej);box-shadow:0 1px 3px rgba(30,42,51,.10)}
+
 @media(max-width:560px){
   .voc-tab td{padding:7px 12px;font-size:14px}
   .voc-tab .v-iz{display:none}
@@ -126,18 +150,23 @@ footer{border-top:1px solid var(--ivica);padding:30px 0 44px;color:var(--tiho);f
 <section class="hero">
   <div class="wrap">
     <h1>Rečnik <em>po temama</em>.</h1>
-    <p>Sve reči iz kursa i iz 24 situacije, plus tematski dodatak — pozdravi, brojevi, glagoli, telo, priroda. Otvori temu da vidiš spisak, ili pretraži na srpskom i grčkom.</p>
+    <p>Rečnik po temama i <b>brze fraze sa primerima u rečenicama</b> — ono što se stvarno govori. Otvori temu da vidiš spisak, ili pretraži na srpskom i grčkom.</p>
     <div class="brojke" id="brojke"></div>
   </div>
 </section>
 
 <div class="wrap">
+  <div class="podnavi" id="podnavi">
+    <button class="on" data-p="recnik">Rečnik</button>
+    <button data-p="fraze">Brze fraze</button>
+  </div>
   <div class="voc-alat">
     <button class="mini" id="voc-otvori">Otvori sve</button>
     <button class="mini" id="voc-zatvori">Zatvori sve</button>
     <span class="voc-broj" id="voc-broj"></span>
   </div>
   <div id="voc-lista" style="padding-bottom:60px"></div>
+  <div id="fr-lista" style="padding-bottom:60px" hidden></div>
 </div>
 
 <footer class="wrap">
@@ -603,6 +632,357 @@ const RECNIK = {
 
 };
 
+/* BRZE FRAZE — fraza + primeri u rečenicama.
+   Format teme: [fraza_gr, transkripcija, srpski, [ [primer_gr, transkripcija, srpski], ... ] ] */
+
+const FRAZE = {
+
+"Kako si — pitanje i odgovor": [
+["Τι κάνεις;","ti kánis","Kako si? (neformalno)",[
+  ["Γεια σου Νίκο, τι κάνεις;","ja su Níko, ti kánis","Zdravo Niko, kako si?"],
+  ["Τι κάνεις, καλά είσαι;","ti kánis, kalá íse","Kako si, jesi li dobro?"],
+  ["Τι κάνετε σήμερα;","ti kánete símera","Kako ste danas? (učtivo)"]]],
+["Πώς είσαι;","pos íse","Kako si?",[
+  ["Πώς είσαι μετά το ταξίδι;","pos íse metá to taksídi","Kako si posle puta?"],
+  ["Πώς είστε, κύριε;","pos íste, kírie","Kako ste, gospodine?"]]],
+["Όχι άσχημα","óhi áshima","Nije loše",[
+  ["Τι κάνεις; — Όχι άσχημα.","ti kánis — óhi áshima","Kako si? — Nije loše."],
+  ["Το ξενοδοχείο; Όχι άσχημα.","to ksenodohío? óhi áshima","Hotel? Nije loš."]]],
+["Έτσι κι έτσι","étsi ki étsi","Tako-tako",[
+  ["Πώς πήγε; — Έτσι κι έτσι.","pos píje — étsi ki étsi","Kako je prošlo? — Tako-tako."],
+  ["Ο καιρός είναι έτσι κι έτσι.","o kerós íne étsi ki étsi","Vreme je tako-tako."]]],
+["Όλα καλά","óla kalá","Sve je u redu",[
+  ["Μην ανησυχείς, όλα καλά.","min anisihís, óla kalá","Ne brini, sve je u redu."],
+  ["Όλα καλά με το δωμάτιο;","óla kalá me to domátio","Je li sve u redu sa sobom?"]]]
+],
+
+"Predstavljanje": [
+["Με λένε…","me léne","Zovem se…",[
+  ["Με λένε Μάρκο, χαίρω πολύ.","me léne Márko, héro polí","Zovem se Marko, drago mi je."],
+  ["Πώς σε λένε; — Με λένε Άννα.","pos se léne — me léne Ána","Kako se zoveš? — Zovem se Ana."]]],
+["Είμαι από…","íme apó","Ja sam iz…",[
+  ["Είμαι από τη Σερβία, από το Βελιγράδι.","íme apó ti Servía, apó to Veligrádi","Ja sam iz Srbije, iz Beograda."],
+  ["Από πού είσαι; — Είμαι από το Νόβι Σαντ.","apó pu íse — íme apó to Nóvi Sad","Odakle si? — Iz Novog Sada sam."]]],
+["Είμαι … χρονών","íme … hronón","Imam … godina",[
+  ["Είμαι τριάντα χρονών.","íme triánda hronón","Imam trideset godina."],
+  ["Ο γιος μου είναι δέκα χρονών.","o jos mu íne déka hronón","Moj sin ima deset godina."]]],
+["Μένω στο/στη…","méno sto/sti","Živim u…",[
+  ["Μένω στο Βελιγράδι με την οικογένειά μου.","méno sto Veligrádi me tin ikojéniá mu","Živim u Beogradu sa porodicom."],
+  ["Μένεις εδώ κοντά;","ménis edó kondá","Živiš li ovde blizu?"]]],
+["Δουλεύω ως…","dulévo os","Radim kao…",[
+  ["Δουλεύω ως μηχανικός.","dulévo os mihanikós","Radim kao inženjer."],
+  ["Τι δουλειά κάνεις;","ti duliá kánis","Čime se baviš?"]]],
+["Είμαι εδώ για διακοπές","íme edó ja diakopés","Ovde sam na odmoru",[
+  ["Είμαι εδώ για διακοπές, για μία εβδομάδα.","íme edó ja diakopés, ja mía evdomáda","Ovde sam na odmoru, nedelju dana."],
+  ["Πρώτη φορά στην Ελλάδα.","próti forá stin Eláda","Prvi put sam u Grčkoj."]]]
+],
+
+"Kad ne razumeš": [
+["Μιλάς ελληνικά;","milás eliniká","Govoriš li grčki?",[
+  ["Μιλάτε αγγλικά ή σέρβικα;","miláte angliká i sérvika","Govorite li engleski ili srpski?"],
+  ["Μιλάει κανείς αγγλικά εδώ;","milái kanís angliká edó","Govori li neko ovde engleski?"]]],
+["Ναι, λίγο","ne, lígo","Da, malo",[
+  ["Μιλάς ελληνικά; — Ναι, λίγο.","milás eliniká — ne, lígo","Govoriš li grčki? — Da, malo."],
+  ["Καταλαβαίνω λίγο, αλλά μαθαίνω.","katalavéno lígo, alá mathéno","Razumem malo, ali učim."]]],
+["Δεν μιλάω καλά ελληνικά","den miláo kalá eliniká","Ne govorim dobro grčki",[
+  ["Συγγνώμη, δεν μιλάω καλά ελληνικά.","signómi, den miláo kalá eliniká","Izvinite, ne govorim dobro grčki."],
+  ["Είμαι αρχάριος στα ελληνικά.","íme arhários sta eliniká","Početnik sam u grčkom."]]],
+["Μπορείτε να το επαναλάβετε;","boríte na to epanalávete","Možete li ponoviti?",[
+  ["Συγγνώμη, μπορείτε να το επαναλάβετε;","signómi, boríte na to epanalávete","Izvinite, možete li ponoviti?"],
+  ["Δεν άκουσα καλά, ξανά παρακαλώ.","den ákusa kalá, ksaná parakaló","Nisam dobro čuo, ponovo molim."]]],
+["Μιλήστε πιο αργά, παρακαλώ","milíste pjo argá, parakaló","Govorite sporije, molim",[
+  ["Πιο αργά, παρακαλώ, δεν προλαβαίνω.","pjo argá, parakaló, den prolavéno","Sporije, molim, ne stižem."],
+  ["Μπορείτε να μιλήσετε πιο αργά;","boríte na milísete pjo argá","Možete li da govorite sporije?"]]],
+["Πώς το λένε αυτό;","pos to léne aftó","Kako se ovo kaže?",[
+  ["Πώς το λένε αυτό στα ελληνικά;","pos to léne aftó sta eliniká","Kako se ovo kaže na grčkom?"],
+  ["Τι σημαίνει αυτή η λέξη;","ti siméni aftí i léksi","Šta znači ova reč?"]]],
+["Μπορείτε να το γράψετε;","boríte na to grápsete","Možete li to napisati?",[
+  ["Μπορείτε να μου το γράψετε εδώ;","boríte na mu to grápsete edó","Možete li mi to napisati ovde?"],
+  ["Γράψτε μου τη διεύθυνση, παρακαλώ.","grápste mu ti dhiéfthinsi, parakaló","Napišite mi adresu, molim."]]]
+],
+
+"Pitanja u prodavnici i restoranu": [
+["Πόσο κοστίζει;","póso kostízi","Koliko košta?",[
+  ["Πόσο κοστίζει το εισιτήριο;","póso kostízi to isitírio","Koliko košta karta?"],
+  ["Πόσο κοστίζουν αυτά τα δύο;","póso kostízun aftá ta dío","Koliko koštaju ova dva?"],
+  ["Πόσο κάνει όλο μαζί;","póso káni ólo mazí","Koliko je sve ukupno?"]]],
+["Είναι πολύ ακριβό","íne polí akrivó","Previše je skupo",[
+  ["Μου αρέσει, αλλά είναι πολύ ακριβό.","mu arési, alá íne polí akrivó","Sviđa mi se, ali je preskupo."],
+  ["Έχετε κάτι πιο φθηνό;","éhete káti pjo fthinó","Imate li nešto jeftinije?"]]],
+["Θα ήθελα…","tha íthela","Želeo bih…",[
+  ["Θα ήθελα έναν καφέ και ένα νερό.","tha íthela énan kafé ke éna neró","Želeo bih kafu i vodu."],
+  ["Θα ήθελα να δοκιμάσω αυτό.","tha íthela na dokimáso aftó","Želeo bih ovo da probam."]]],
+["Έχετε…;","éhete","Imate li…?",[
+  ["Έχετε μενού στα αγγλικά;","éhete menú sta angliká","Imate li jelovnik na engleskom?"],
+  ["Έχετε τραπέζι για τρεις;","éhete trapézi ja tris","Imate li sto za troje?"],
+  ["Έχετε κάτι χωρίς κρέας;","éhete káti horís kréas","Imate li nešto bez mesa?"]]],
+["Θα το πάρω","tha to páro","Uzeću to",[
+  ["Μου αρέσει, θα το πάρω.","mu arési, tha to páro","Sviđa mi se, uzeću ga."],
+  ["Εντάξει, θα τα πάρω και τα δύο.","endáksi, tha ta páro ke ta dío","U redu, uzeću oba."]]],
+["Είναι νόστιμο","íne nóstimo","Ukusno je",[
+  ["Πολύ νόστιμο, συγχαρητήρια!","polí nóstimo, sinharitíria","Vrlo ukusno, svaka čast!"],
+  ["Το φαγητό ήταν υπέροχο.","to fajitó ítan ipérohó","Hrana je bila izvrsna."]]],
+["Είμαι αλλεργικός/ή σε…","íme alerjikós/í se","Alergičan sam na…",[
+  ["Είμαι αλλεργικός στα ψάρια.","íme alerjikós sta psária","Alergičan sam na ribu."],
+  ["Έχει γάλα ή αυγά αυτό;","éhi gála i avgá aftó","Ima li ovo mleka ili jaja?"]]]
+],
+
+"Smeštaj i prevoz": [
+["Θέλω να κλείσω δωμάτιο","thélo na klíso domátio","Hoću da rezervišem sobu",[
+  ["Θέλω να κλείσω ένα δωμάτιο για τρεις νύχτες.","thélo na klíso éna domátio ja tris níhtes","Hoću sobu za tri noći."],
+  ["Έχετε ελεύθερο δωμάτιο απόψε;","éhete eléfthero domátio apópse","Imate li slobodnu sobu večeras?"]]],
+["Υπάρχει Wi-Fi;","ipárhi vájfaj","Ima li Wi-Fi?",[
+  ["Υπάρχει δωρεάν Wi-Fi στο δωμάτιο;","ipárhi doreán vájfaj sto domátio","Ima li besplatan Wi-Fi u sobi?"],
+  ["Ποιος είναι ο κωδικός;","piós íne o kodikós","Koja je lozinka?"]]],
+["Έχετε χάρτη;","éhete hárti","Imate li mapu?",[
+  ["Έχετε χάρτη της πόλης;","éhete hárti tis pólis","Imate li mapu grada?"],
+  ["Μπορείτε να μου δείξετε στον χάρτη;","boríte na mu díksete ston hárti","Možete li mi pokazati na mapi?"]]],
+["Εισιτήριο μονής διαδρομής","isitírio monís diadromís","Karta u jednom pravcu",[
+  ["Ένα εισιτήριο μονής διαδρομής, παρακαλώ.","éna isitírio monís diadromís, parakaló","Jednu kartu u jednom pravcu, molim."],
+  ["Μονό ή με επιστροφή;","monó i me epistrofí","U jednom pravcu ili povratna?"]]],
+["Εισιτήριο με επιστροφή","isitírio me epistrofí","Povratna karta",[
+  ["Δύο εισιτήρια με επιστροφή για τη Θάσο.","dío isitíria me epistrofí ja ti Tháso","Dve povratne karte za Tasos."],
+  ["Πόσο κάνει με επιστροφή;","póso káni me epistrofí","Koliko košta povratna?"]]],
+["Τι ώρα φεύγει;","ti óra févji","Kada polazi?",[
+  ["Τι ώρα φεύγει το πλοίο;","ti óra févji to plío","Kada polazi brod?"],
+  ["Τι ώρα φτάνουμε;","ti óra ftánume","Kada stižemo?"]]],
+["Έχω χαθεί","ého hathí","Izgubio sam se",[
+  ["Συγγνώμη, έχω χαθεί.","signómi, ého hathí","Izvinite, izgubio sam se."],
+  ["Έχω χαθεί, μπορείτε να με βοηθήσετε;","ého hathí, boríte na me voithísete","Izgubio sam se, možete li mi pomoći?"]]],
+["Δίπλα σε / Πίσω από","dípla se / píso apó","Pored / Iza",[
+  ["Το φαρμακείο είναι δίπλα στην τράπεζα.","to farmakío íne dípla stin trápeza","Apoteka je pored banke."],
+  ["Το πάρκινγκ είναι πίσω από το ξενοδοχείο.","to párking íne píso apó to ksenodohío","Parking je iza hotela."]]]
+],
+
+"Zdravlje i hitno": [
+["Πονάω…","ponáo","Boli me…",[
+  ["Πονάει το κεφάλι μου.","ponái to kefáli mu","Boli me glava."],
+  ["Με πονάει ο λαιμός από χθες.","me ponái o lemós apó hthes","Boli me grlo od juče."],
+  ["Πού πονάτε;","pu ponáte","Gde vas boli?"]]],
+["Είναι επείγον","íne epígon","Hitno je",[
+  ["Βοηθήστε με, είναι επείγον!","voithíste me, íne epígon","Pomozite mi, hitno je!"],
+  ["Πρέπει να πάμε αμέσως.","prépi na páme amésos","Moramo odmah da idemo."]]],
+["Καλέστε ένα ασθενοφόρο!","kaléste éna asthenofóro","Zovite hitnu pomoć!",[
+  ["Γρήγορα, καλέστε ένα ασθενοφόρο!","grígora, kaléste éna asthenofóro","Brzo, zovite hitnu pomoć!"],
+  ["Καλέστε την αστυνομία, παρακαλώ.","kaléste tin astinomía, parakaló","Zovite policiju, molim."]]],
+["Έχετε φάρμακα για…;","éhete fármaka ja","Imate li lek za…?",[
+  ["Έχετε φάρμακα για τον πονοκέφαλο;","éhete fármaka ja ton ponokéfalo","Imate li lek za glavobolju?"],
+  ["Έχετε κάτι χωρίς συνταγή;","éhete káti horís sindají","Imate li nešto bez recepta?"]]],
+["Έγινε ατύχημα","éjine atíhima","Dogodila se nesreća",[
+  ["Έγινε ατύχημα εδώ, καλέστε βοήθεια!","éjine atíhima edó, kaléste voíthia","Ovde se dogodila nesreća, zovite pomoć!"],
+  ["Κανείς δεν χτύπησε σοβαρά.","kanís den htípise sovará","Niko nije teže povređen."]]]
+],
+
+"Učtivost i sitne reakcije": [
+["Καλή τύχη!","kalí tíhi","Srećno!",[
+  ["Καλή τύχη αύριο!","kalí tíhi ávrio","Srećno sutra!"],
+  ["Σου εύχομαι καλή τύχη.","su éfhome kalí tíhi","Želim ti sreću."]]],
+["Λυπάμαι","lipáme","Žao mi je",[
+  ["Λυπάμαι για την καθυστέρηση.","lipáme ja tin kathistérisi","Žao mi je zbog kašnjenja."],
+  ["Λυπάμαι πολύ, ήταν λάθος μου.","lipáme polí, ítan láthos mu","Mnogo mi je žao, moja greška."]]],
+["Κανένα πρόβλημα","kanéna próvlima","Nema problema",[
+  ["Ευχαριστώ! — Κανένα πρόβλημα.","efharistó — kanéna próvlima","Hvala! — Nema problema."],
+  ["Κανένα πρόβλημα, το κανονίζω εγώ.","kanéna próvlima, to kanonízo egó","Nema problema, ja ću to srediti."]]],
+["Με χαρά","me hará","Sa zadovoljstvom",[
+  ["Θα με βοηθήσεις; — Με χαρά.","tha me voithísis — me hará","Hoćeš li mi pomoći? — Sa zadovoljstvom."],
+  ["Με χαρά θα έρθω μαζί σας.","me hará tha értho mazí sas","Rado ću poći s vama."]]],
+["Δεν πειράζει","den pirázi","Nije strašno",[
+  ["Συγγνώμη που άργησα. — Δεν πειράζει.","signómi pu árjisa — den pirázi","Izvini što kasnim. — Nije strašno."],
+  ["Δεν πειράζει, θα το κάνουμε αύριο.","den pirázi, tha to kánume ávrio","Nije strašno, uradićemo sutra."]]],
+["Μην ανησυχείς","min anisihís","Ne brini",[
+  ["Μην ανησυχείς, όλα θα πάνε καλά.","min anisihís, óla tha páne kalá","Ne brini, sve će biti u redu."],
+  ["Μην ανησυχείτε, έχουμε χρόνο.","min anisihíte, éhume hróno","Ne brinite, imamo vremena."]]]
+],
+
+"Potvrda, sumnja, mišljenje": [
+["Φυσικά","fisiká","Naravno",[
+  ["Μπορώ να καθίσω; — Φυσικά!","boró na kathíso — fisiká","Mogu li da sednem? — Naravno!"],
+  ["Φυσικά και θα έρθω.","fisiká ke tha értho","Naravno da ću doći."]]],
+["Ίσως","ísos","Možda",[
+  ["Ίσως να βρέξει το απόγευμα.","ísos na vréksi to apójevma","Možda će padati kiša popodne."],
+  ["Θα έρθεις; — Ίσως.","tha érthis — ísos","Hoćeš li doći? — Možda."]]],
+["Νομίζω ότι…","nomízo óti","Mislim da…",[
+  ["Νομίζω ότι είναι κλειστά σήμερα.","nomízo óti íne klistá símera","Mislim da je danas zatvoreno."],
+  ["Νομίζω ότι έχεις δίκιο.","nomízo óti éhis díkio","Mislim da si u pravu."]]],
+["Είναι αλήθεια","íne alíthia","Istina je",[
+  ["Είναι αλήθεια, το είδα κι εγώ.","íne alíthia, to ída ki egó","Istina je, i ja sam video."],
+  ["Δεν είναι αλήθεια αυτό.","den íne alíthia aftó","To nije istina."]]],
+["Έχεις δίκιο","éhis díkio","U pravu si",[
+  ["Έχεις δίκιο, ας πάμε νωρίτερα.","éhis díkio, as páme norítera","U pravu si, hajde da idemo ranije."],
+  ["Δεν έχεις άδικο.","den éhis ádiko","Nisi u krivu."]]],
+["Δεν ξέρω","den kséro","Ne znam",[
+  ["Δεν ξέρω, ας ρωτήσουμε κάποιον.","den kséro, as rotísume kápion","Ne znam, hajde da pitamo nekoga."],
+  ["Δεν είμαι σίγουρος.","den íme síguros","Nisam siguran."]]]
+],
+
+"Razgovorno i sleng": [
+["Οκ, έγινε","ok, éjine","Važi, dogovoreno",[
+  ["Στις έξι; — Οκ, έγινε.","stis éksi — ok, éjine","U šest? — Važi, dogovoreno."],
+  ["Έγινε, τα λέμε εκεί.","éjine, ta léme ekí","Dogovoreno, vidimo se tamo."]]],
+["Πάμε!","páme","Idemo!",[
+  ["Είσαι έτοιμος; Πάμε!","íse étimos? páme","Jesi li spreman? Idemo!"],
+  ["Πάμε πριν βρέξει.","páme prin vréksi","Idemo pre nego što padne kiša."]]],
+["Άντε!","áde","Hajde!",[
+  ["Άντε, γρήγορα, θα αργήσουμε!","áde, grígora, tha arjísume","Hajde, brzo, zakasnićemo!"],
+  ["Άντε, μπορείς!","áde, borís","Hajde, možeš ti to!"]]],
+["Πολύ κουλ!","polí kul","Baš kul!",[
+  ["Πας στη Σαντορίνη; Πολύ κουλ!","pas sti Sandoríni? polí kul","Ideš na Santorini? Baš kul!"],
+  ["Πολύ κουλ το μέρος εδώ.","polí kul to méros edó","Baš je kul ovo mesto."]]],
+["Χάλια είναι","hália íne","Grozno je",[
+  ["Ο καιρός σήμερα είναι χάλια.","o kerós símera íne hália","Vreme je danas grozno."],
+  ["Έχασα το λεωφορείο… χάλια.","éhasa to leoforío… hália","Propustio sam autobus… grozno."]]],
+["Σοβαρά;","sovará","Ozbiljno?",[
+  ["Σοβαρά; Δεν το πιστεύω!","sovará? den to pistévo","Ozbiljno? Ne verujem!"],
+  ["Σοβαρά μιλάς ή κάνεις πλάκα;","sovará milás i kánis pláka","Ozbiljno govoriš ili se šališ?"]]],
+["Είναι τρελό!","íne treló","Ludo je!",[
+  ["Είναι τρελό πόσο γρήγορα περνάει ο χρόνος.","íne treló póso grígora pernái o hrónos","Ludo je koliko brzo vreme prolazi."],
+  ["Τρελό μέρος, πρέπει να το δεις!","treló méros, prépi na to dis","Ludo mesto, moraš da ga vidiš!"]]],
+["Τα 'χω πάρει","ta ho pári","Nervozan sam / dosta mi je",[
+  ["Τα 'χω πάρει με αυτή την καθυστέρηση.","ta ho pári me aftí tin kathistérisi","Dosta mi je ovog kašnjenja."],
+  ["Βαρέθηκα να περιμένω.","varéthika na periméno","Dosadilo mi je da čekam."]]]
+]
+,
+
+"Brojevi i količine": [
+["Ένα / δύο / τρία…","éna / dío / tría","Jedan / dva / tri…",[
+  ["Δύο καφέδες και ένα νερό, παρακαλώ.","dío kafédes ke éna neró, parakaló","Dve kafe i jednu vodu, molim."],
+  ["Είμαστε τέσσερα άτομα.","ímaste tésera átoma","Nas je četvoro."],
+  ["Θέλω τρία εισιτήρια.","thélo tría isitíria","Hoću tri karte."]]],
+["Ένα κιλό / μισό κιλό","éna kiló / misó kiló","Kilogram / pola kilograma",[
+  ["Ένα κιλό ντομάτες, παρακαλώ.","éna kiló domátes, parakaló","Kilo paradajza, molim."],
+  ["Μισό κιλό φέτα και λίγες ελιές.","misó kiló féta ke líjes eliés","Pola kile fete i malo maslina."]]],
+["Λίγο / πολύ","lígo / polí","Malo / mnogo",[
+  ["Λίγο ακόμα, παρακαλώ.","lígo akóma, parakaló","Još malo, molim."],
+  ["Είναι πολύ για μένα.","íne polí ja ména","To je previše za mene."],
+  ["Λίγο πιο μεγάλο;","lígo pjo megálo","Malo veće?"]]],
+["Άλλο ένα","álo éna","Još jedan",[
+  ["Άλλη μία μπίρα, παρακαλώ.","áli mía bíra, parakaló","Još jedno pivo, molim."],
+  ["Θέλετε κάτι άλλο; — Όχι, ευχαριστώ.","thélete káti álo — óhi, efharistó","Želite li još nešto? — Ne, hvala."]]],
+["Αρκετά","arketá","Dosta je",[
+  ["Αρκετά, ευχαριστώ!","arketá, efharistó","Dosta je, hvala!"],
+  ["Φτάνει τόσο.","ftáni tóso","Toliko je dovoljno."]]],
+["Μαζί ή χωριστά;","mazí i horistá","Zajedno ili odvojeno?",[
+  ["Πληρώνουμε μαζί.","plirónume mazí","Plaćamo zajedno."],
+  ["Χωριστά, παρακαλώ.","horistá, parakaló","Odvojeno, molim."]]]
+],
+
+"Vreme i dogovaranje": [
+["Τι ώρα είναι;","ti óra íne","Koliko je sati?",[
+  ["Συγγνώμη, τι ώρα είναι;","signómi, ti óra íne","Izvinite, koliko je sati?"],
+  ["Είναι τρεις και μισή.","íne tris ke misí","Pola četiri je."]]],
+["Στις…","stis","U … sati",[
+  ["Θα συναντηθούμε στις οκτώ.","tha sinandithúme stis ohtó","Naći ćemo se u osam."],
+  ["Το λεωφορείο φεύγει στις έξι και δέκα.","to leoforío févji stis éksi ke déka","Autobus polazi u šest i deset."]]],
+["Πότε;","póte","Kada?",[
+  ["Πότε ανοίγει το μουσείο;","póte anígi to musío","Kada se otvara muzej?"],
+  ["Πότε κλείνετε;","póte klínete","Kada zatvarate?"]]],
+["Σήμερα / αύριο / χθες","símera / ávrio / hthes","Danas / sutra / juče",[
+  ["Αύριο πάμε στο νησί.","ávrio páme sto nisí","Sutra idemo na ostrvo."],
+  ["Χθες ήμασταν στην παραλία.","hthes ímastan stin paralía","Juče smo bili na plaži."]]],
+["Νωρίς / αργά","norís / argá","Rano / kasno",[
+  ["Είναι πολύ νωρίς ακόμα.","íne polí norís akóma","Još je vrlo rano."],
+  ["Συγγνώμη που άργησα.","signómi pu árjisa","Izvini što kasnim."]]],
+["Πόση ώρα;","pósi óra","Koliko dugo?",[
+  ["Πόση ώρα κάνει μέχρι εκεί;","pósi óra káni méhri ekí","Koliko traje do tamo?"],
+  ["Μισή ώρα με τα πόδια.","misí óra me ta pódia","Pola sata peške."]]],
+["Ας συναντηθούμε…","as sinandithúme","Hajde da se nađemo…",[
+  ["Ας συναντηθούμε μπροστά στο ξενοδοχείο.","as sinandithúme brostá sto ksenodohío","Hajde da se nađemo ispred hotela."],
+  ["Θα σε περιμένω εδώ.","tha se periméno edó","Čekaću te ovde."]]]
+],
+
+"Plaćanje": [
+["Με κάρτα ή μετρητά;","me kárta i metritá","Karticom ili gotovinom?",[
+  ["Μπορώ να πληρώσω με κάρτα;","boró na pliróso me kárta","Mogu li da platim karticom?"],
+  ["Θα πληρώσω με μετρητά.","tha pliróso me metritá","Platiću gotovinom."]]],
+["Δέχεστε κάρτες;","déheste kártes","Primate li kartice?",[
+  ["Δέχεστε κάρτες ή μόνο μετρητά;","déheste kártes i móno metritá","Primate li kartice ili samo gotovinu?"],
+  ["Το μηχάνημα δεν δουλεύει.","to mihánima den dulévi","Aparat ne radi."]]],
+["Την απόδειξη, παρακαλώ","tin apódiksi, parakaló","Račun, molim",[
+  ["Μπορώ να έχω την απόδειξη;","boró na ého tin apódiksi","Mogu li da dobijem račun?"],
+  ["Νομίζω ότι υπάρχει λάθος στον λογαριασμό.","nomízo óti ipárhi láthos ston logariazmó","Mislim da ima greška na računu."]]],
+["Πού είναι το ΑΤΜ;","pu íne to éj-ti-em","Gde je bankomat?",[
+  ["Υπάρχει ΑΤΜ εδώ κοντά;","ipárhi éj-ti-em edó kondá","Ima li bankomat ovde blizu?"],
+  ["Χρειάζομαι ψιλά.","hriázome psilá","Treba mi sitno."]]],
+["Κρατήστε τα ρέστα","kratíste ta résta","Zadržite kusur",[
+  ["Κρατήστε τα ρέστα, ευχαριστώ.","kratíste ta résta, efharistó","Zadržite kusur, hvala."],
+  ["Μου δώσατε λάθος ρέστα.","mu dósate láthos résta","Dali ste mi pogrešan kusur."]]]
+],
+
+"Molbe i dozvole": [
+["Μπορώ να…;","boró na","Mogu li da…?",[
+  ["Μπορώ να καθίσω εδώ;","boró na kathíso edó","Mogu li da sednem ovde?"],
+  ["Μπορώ να βγάλω μια φωτογραφία;","boró na vgálo mia fotografía","Mogu li da slikam?"],
+  ["Μπορώ να δω το μενού;","boró na do to menú","Mogu li da vidim jelovnik?"]]],
+["Επιτρέπεται;","epitrépete","Da li je dozvoljeno?",[
+  ["Επιτρέπεται το κάπνισμα εδώ;","epitrépete to kápnizma edó","Da li je pušenje ovde dozvoljeno?"],
+  ["Επιτρέπονται σκύλοι;","epitréponde skíli","Jesu li psi dozvoljeni?"]]],
+["Θα μπορούσατε να…;","tha borúsate na","Da li biste mogli…?",[
+  ["Θα μπορούσατε να με βοηθήσετε;","tha borúsate na me voithísete","Da li biste mogli da mi pomognete?"],
+  ["Θα μπορούσατε να μου καλέσετε ταξί;","tha borúsate na mu kalésete taksí","Da li biste mi pozvali taksi?"]]],
+["Μια στιγμή","mia stigmí","Trenutak",[
+  ["Μια στιγμή, παρακαλώ.","mia stigmí, parakaló","Trenutak, molim."],
+  ["Περιμένετε ένα λεπτό.","periménete éna leptó","Sačekajte minut."]]],
+["Περάστε","peráste","Izvolite / uđite",[
+  ["Περάστε, παρακαλώ.","peráste, parakaló","Izvolite, uđite."],
+  ["Μετά από εσάς.","metá apó esás","Posle vas."]]]
+],
+
+"Na plaži i u vodi": [
+["Είναι ελεύθερο;","íne eléfthero","Je li slobodno?",[
+  ["Είναι ελεύθερες αυτές οι ξαπλώστρες;","íne eléftheres aftés i ksaplóstres","Jesu li ove ležaljke slobodne?"],
+  ["Είναι πιασμένο αυτό το τραπέζι;","íne piazméno aftó to trapézi","Je li ovaj sto zauzet?"]]],
+["Πόσο για μία μέρα;","póso ja mía méra","Koliko za jedan dan?",[
+  ["Πόσο κοστίζουν δύο ξαπλώστρες με ομπρέλα;","póso kostízun dío ksaplóstres me ombréla","Koliko koštaju dve ležaljke sa suncobranom?"],
+  ["Περιλαμβάνεται κάτι;","perilamvánete káti","Da li je nešto uključeno?"]]],
+["Η θάλασσα είναι…","i thálasa íne","More je…",[
+  ["Η θάλασσα είναι ήρεμη σήμερα.","i thálasa íne íremi símera","More je danas mirno."],
+  ["Έχει πολύ κύμα.","éhi polí kíma","Ima mnogo talasa."],
+  ["Το νερό είναι κρύο!","to neró íne krío","Voda je hladna!"]]],
+["Είναι βαθιά;","íne vathiá","Je li duboko?",[
+  ["Είναι βαθιά εδώ;","íne vathiá edó","Je li ovde duboko?"],
+  ["Είναι ασφαλές για παιδιά;","íne asfalés ja pediá","Je li bezbedno za decu?"]]],
+["Πού έχει σκιά;","pu éhi skiá","Gde ima hlada?",[
+  ["Υπάρχει σκιά εκεί πέρα;","ipárhi skiá ekí péra","Ima li hlada tamo?"],
+  ["Ο ήλιος είναι πολύ δυνατός.","o ílios íne polí dinatós","Sunce je vrlo jako."]]]
+],
+
+"Taksi i kola": [
+["Στη διεύθυνση αυτή, παρακαλώ","sti dhiéfthinsi aftí, parakaló","Na ovu adresu, molim",[
+  ["Στο αεροδρόμιο, παρακαλώ.","sto aerodrómio, parakaló","Do aerodroma, molim."],
+  ["Ξέρετε πού είναι αυτό;","kséreté pu íne aftó","Znate li gde je ovo?"]]],
+["Πόσο θα κοστίσει;","póso tha kostísi","Koliko će koštati?",[
+  ["Πόσο περίπου μέχρι το λιμάνι;","póso perípu méhri to limáni","Koliko otprilike do luke?"],
+  ["Βάλτε το ταξίμετρο, παρακαλώ.","válte to taksímetro, parakaló","Uključite taksimetar, molim."]]],
+["Σταματήστε εδώ","stamatíste edó","Stanite ovde",[
+  ["Σταματήστε εδώ, παρακαλώ.","stamatíste edó, parakaló","Stanite ovde, molim."],
+  ["Λίγο πιο μπροστά.","lígo pjo brostá","Malo napred."]]],
+["Βιάζομαι","viázome","Žuri mi se",[
+  ["Βιάζομαι λίγο, έχω πλοίο.","viázome lígo, ého plío","Malo mi se žuri, imam brod."],
+  ["Πόση ώρα θα κάνουμε;","pósi óra tha kánume","Koliko ćemo putovati?"]]],
+["Γεμάτο, παρακαλώ","jemáto, parakaló","Pun rezervoar, molim",[
+  ["Αμόλυβδη, γεμάτο παρακαλώ.","amólivdi, jemáto parakaló","Bezolovni, pun rezervoar molim."],
+  ["Για τριάντα ευρώ.","ja triánda evró","Za trideset evra."]]]
+],
+
+"Mali razgovor": [
+["Είναι πολύ όμορφα εδώ","íne polí ómorfa edó","Ovde je vrlo lepo",[
+  ["Είναι πολύ όμορφα εδώ, μου αρέσει!","íne polí ómorfa edó, mu arési","Ovde je vrlo lepo, sviđa mi se!"],
+  ["Τι όμορφο μέρος!","ti ómorfo méros","Kakvo lepo mesto!"]]],
+["Τι προτείνετε;","ti protínete","Šta preporučujete?",[
+  ["Τι προτείνετε να δούμε εδώ;","ti protínete na dúme edó","Šta preporučujete da vidimo ovde?"],
+  ["Πού τρώνε οι ντόπιοι;","pu tróne i dópii","Gde jedu meštani?"]]],
+["Πρώτη φορά εδώ","próti forá edó","Prvi put sam ovde",[
+  ["Είναι η πρώτη μου φορά στην Ελλάδα.","íne i próti mu forá stin Eláda","Prvi put sam u Grčkoj."],
+  ["Θα ξανάρθω σίγουρα.","tha ksanártho sígura","Sigurno ću opet doći."]]],
+["Μαθαίνω ελληνικά","mathéno eliniká","Učim grčki",[
+  ["Μαθαίνω ελληνικά, αλλά σιγά σιγά.","mathéno eliniká, alá sigá sigá","Učim grčki, ali polako."],
+  ["Πώς τα πάω;","pos ta páo","Kako mi ide?"]]],
+["Καλή συνέχεια!","kalí sinéhia","Prijatan nastavak!",[
+  ["Ευχαριστώ για όλα, καλή συνέχεια!","efharistó ja óla, kalí sinéhia","Hvala na svemu, prijatan nastavak!"],
+  ["Καλό καλοκαίρι!","kaló kalokéri","Prijatno leto!"]]]
+]
+};
+
 /* ══════════ POMOĆNE ══════════ */
 const $ = s => document.querySelector(s);
 const esc = t => String(t).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
@@ -613,19 +993,35 @@ const norm = t => String(t).toLowerCase()
 
 const TEME = Object.keys(RECNIK);
 const UKUPNO = TEME.reduce((n,t) => n + RECNIK[t].length, 0);
+const FR_TEME = Object.keys(FRAZE);
+const FR_UKUPNO = FR_TEME.reduce((n,t) => n + FRAZE[t].length, 0);
+const FR_PRIMERA = FR_TEME.reduce((n,t) => n + FRAZE[t].reduce((s,f)=>s+f[3].length,0), 0);
+let sekcija = 'recnik';
+
 let upit = "";
 
 $("#brojke").innerHTML = [
-  [UKUPNO, "reči"], [TEME.length, "tema"], [24, "situacije"]
+  [UKUPNO, "reči"], [FR_UKUPNO, "fraza"], [FR_PRIMERA, "primera"]
 ].map(([b,s]) => `<div class="brojka"><b>${b}</b><span>${s}</span></div>`).join("");
 
 /* ══════════ ISCRTAVANJE ══════════ */
 function istakni(s, q){
   if(!q) return esc(s);
-  const n = norm(s), i = n.indexOf(q);
+  s = String(s);
+  // mapiranje: za svaki znak originala pamtimo gde pada u normalizovanom tekstu
+  let n = '', mapa = [];
+  for(let k = 0; k < s.length; k++){
+    const dео = norm(s[k]);
+    for(let j = 0; j < deo_len(dео); j++) mapa.push(k);
+    n += dео;
+  }
+  const i = n.indexOf(q);
   if(i < 0) return esc(s);
-  return esc(s.slice(0,i)) + '<mark>' + esc(s.slice(i, i+q.length)) + '</mark>' + esc(s.slice(i+q.length));
+  const poc = mapa[i];
+  const kraj = (i + q.length < mapa.length) ? mapa[i + q.length] : s.length;
+  return esc(s.slice(0, poc)) + '<mark>' + esc(s.slice(poc, kraj)) + '</mark>' + esc(s.slice(kraj));
 }
+function deo_len(x){ return x.length; }
 
 function crtajRecnik(){
   let html = '', ukupno = 0;
@@ -647,17 +1043,78 @@ function crtajRecnik(){
   $("#voc-broj").textContent = upit ? `${ukupno} rezultata` : `${ukupno} reči · ${TEME.length} tema`;
 }
 
-$("#q").oninput = e => { upit = norm(e.target.value.trim()); crtajRecnik(); };
-$("#voc-otvori").onclick  = () => document.querySelectorAll('#voc-lista details').forEach(d => d.open = true);
-$("#voc-zatvori").onclick = () => document.querySelectorAll('#voc-lista details').forEach(d => d.open = false);
+$("#q").oninput = e => { upit = norm(e.target.value.trim()); crtajSekciju(); };
+
+
+
+/* ══════════ BRZE FRAZE ══════════ */
+
+function crtajFraze(){
+  let html = '', uk = 0;
+  FR_TEME.forEach(tema => {
+    const blokovi = FRAZE[tema].filter(f => {
+      if(!upit) return true;
+      const svetekst = f[0]+' '+f[1]+' '+f[2]+' '+f[3].map(p=>p.join(' ')).join(' ');
+      return norm(svetekst).includes(upit);
+    });
+    if(!blokovi.length) return;
+    uk += blokovi.length;
+    html += `<details class="fr-tema"${upit ? ' open' : ''}>`;
+    html += `<summary>${esc(tema)}<span class="vt-n">${blokovi.length}</span><span class="vt-plus">+</span></summary>`;
+    blokovi.forEach(([gr, iz, sr, primeri]) => {
+      html += `<div class="fr-blok"><div class="fr-glava">`;
+      html += `<div class="fr-gr">${istakni(gr, upit)}</div>`;
+      html += `<div class="fr-iz">${esc(iz)}</div>`;
+      html += `<div class="fr-sr">${istakni(sr, upit)}</div></div>`;
+      primeri.forEach(([pg, pi, ps]) => {
+        html += `<div class="fr-prim">`;
+        html += `<div class="p-gr">${istakni(pg, upit)}</div>`;
+        html += `<div class="p-iz">${esc(pi)}</div>`;
+        html += `<div class="p-sr">${istakni(ps, upit)}</div></div>`;
+      });
+      html += `</div>`;
+    });
+    html += `</details>`;
+  });
+  document.querySelector('#fr-lista').innerHTML = html ||
+    `<p class="voc-prazno">Ništa za \u201E${esc(document.querySelector('#q').value)}\u201C.</p>`;
+  document.querySelector('#voc-broj').textContent =
+    upit ? `${uk} rezultata` : `${FR_UKUPNO} fraza \u00b7 ${FR_PRIMERA} primera`;
+}
+
+function crtajSekciju(){
+  const jeRecnik = sekcija === 'recnik';
+  document.querySelector('#voc-lista').hidden = !jeRecnik;
+  document.querySelector('#fr-lista').hidden  = jeRecnik;
+  document.querySelector('#q').placeholder = jeRecnik
+    ? 'Tra\u017Ei re\u010D \u2014 npr. ra\u010Dun, \u03BD\u03B5\u03C1\u03CC, pla\u017Ea'
+    : 'Tra\u017Ei frazu \u2014 npr. koliko ko\u0161ta, \u03C0\u03AC\u03BC\u03B5, izgubio';
+  if(jeRecnik) crtajRecnik(); else crtajFraze();
+}
+
+document.querySelector('#podnavi').onclick = e => {
+  const b = e.target.closest('[data-p]'); if(!b) return;
+  sekcija = b.dataset.p;
+  document.querySelectorAll('#podnavi button').forEach(x => x.classList.toggle('on', x === b));
+  crtajSekciju();
+};
+
+document.querySelector('#voc-otvori').onclick = () =>
+  document.querySelectorAll((sekcija==='recnik'?'#voc-lista':'#fr-lista')+' details').forEach(d => d.open = true);
+document.querySelector('#voc-zatvori').onclick = () =>
+  document.querySelectorAll((sekcija==='recnik'?'#voc-lista':'#fr-lista')+' details').forEach(d => d.open = false);
 
 /* ══════════ KARTICE ══════════ */
 let fond = [], idx = 0, okrenuto = false, smer = 'GR', temaFiltar = 'sve';
 
 function napuniFond(){
+  const frazeKarte = FR_TEME.flatMap(t => FRAZE[t].map(([g,i,s]) => [g,i,s,t]));
+  const svePojmove = TEME.flatMap(t => RECNIK[t].map(([g,i,s]) => [g,i,s,t])).concat(frazeKarte);
   const izvor = temaFiltar === 'sve'
-    ? TEME.flatMap(t => RECNIK[t].map(([g,i,s]) => [g,i,s,t]))
-    : RECNIK[temaFiltar].map(([g,i,s]) => [g,i,s,temaFiltar]);
+    ? svePojmove
+    : (RECNIK[temaFiltar]
+        ? RECNIK[temaFiltar].map(([g,i,s]) => [g,i,s,temaFiltar])
+        : FRAZE[temaFiltar].map(([g,i,s]) => [g,i,s,temaFiltar]));
   fond = izvor.sort(() => Math.random() - .5);
   idx = 0; okrenuto = false;
 }
@@ -687,7 +1144,7 @@ function crtajKarticu(){
     </div>
     <div class="tema-izbor">
       <button data-t="sve" class="${temaFiltar==='sve'?'on':''}">sve teme</button>
-      ${TEME.map(t=>`<button data-t="${esc(t)}" class="${temaFiltar===t?'on':''}">${esc(t)}</button>`).join('')}
+      ${TEME.concat(FR_TEME).map(t=>`<button data-t="${esc(t)}" class="${temaFiltar===t?'on':''}">${esc(t)}</button>`).join('')}
     </div>
     <div class="karta-flip">
       <div class="veliko">${esc(lice)}</div>
