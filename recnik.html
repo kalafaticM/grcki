@@ -103,6 +103,28 @@ mark{background:#FCE9A0;color:var(--mastilo);padding:0 2px;border-radius:3px}
 
 footer{border-top:1px solid var(--ivica);padding:30px 0 44px;color:var(--tiho);font-size:14px}
 
+
+/* ── audio ── */
+.zvuk{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;margin-left:7px;vertical-align:middle;
+  border:1px solid var(--ivica);border-radius:50%;background:#fff;
+  cursor:pointer;color:var(--tiho);padding:0;flex:none;
+  transition:all .15s;font-size:11px;line-height:1;
+}
+.zvuk:hover{border-color:var(--egej);color:var(--egej);background:var(--egej-svetlo)}
+.zvuk.svira{background:var(--egej);border-color:var(--egej);color:#fff}
+.zvuk svg{width:12px;height:12px;display:block}
+.zvuk-veliki{width:34px;height:34px;margin-left:10px}
+.zvuk-veliki svg{width:16px;height:16px}
+.audio-info{
+  font:400 12.5px Inter,sans-serif;color:var(--tiho);
+  background:#FFF6E0;border:1px solid #F0E0B0;border-radius:8px;
+  padding:9px 13px;margin:14px 0 0;display:none;
+}
+.audio-info.vidi{display:block}
+.v-gr,.fr-gr,.p-gr{position:relative}
+
 /* ── brze fraze ── */
 .fr-tema{background:#fff;border:1px solid var(--ivica);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
 .fr-tema summary{list-style:none;cursor:pointer;padding:15px 18px;display:flex;align-items:center;gap:14px;font:600 16px Fraunces,serif}
@@ -150,8 +172,9 @@ footer{border-top:1px solid var(--ivica);padding:30px 0 44px;color:var(--tiho);f
 <section class="hero">
   <div class="wrap">
     <h1>Rečnik <em>po temama</em>.</h1>
-    <p>Rečnik po temama i <b>brze fraze sa primerima u rečenicama</b> — ono što se stvarno govori. Otvori temu da vidiš spisak, ili pretraži na srpskom i grčkom.</p>
+    <p>Rečnik po temama i <b>brze fraze sa primerima u rečenicama</b> — ono što se stvarno govori. Otvori temu da vidiš spisak, pretraži na srpskom i grčkom, a klikom na zvučnik čuj izgovor.</p>
     <div class="brojke" id="brojke"></div>
+    <p class="audio-info" id="audio-info"></p>
   </div>
 </section>
 
@@ -1033,7 +1056,7 @@ function crtajRecnik(){
     html += `<summary>${esc(tema)}<span class="vt-n">${redovi.length}</span><span class="vt-plus">+</span></summary>`;
     html += `<table class="voc-tab"><tbody>`;
     redovi.forEach(([g, iz, s]) => {
-      html += `<tr><td class="v-gr">${istakni(g, upit)}</td>`
+      html += `<tr><td class="v-gr">${istakni(g, upit)}${dugmeZvuk(g)}</td>`
            +  `<td class="v-iz">${esc(iz || '')}</td>`
            +  `<td class="v-sr">${istakni(s || '', upit)}</td></tr>`;
     });
@@ -1046,6 +1069,59 @@ function crtajRecnik(){
 $("#q").oninput = e => { upit = norm(e.target.value.trim()); crtajSekciju(); };
 
 
+
+
+/* ══════════ AUDIO (izgovor) ══════════ */
+const IKONA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>';
+
+let grckiGlas = null, glasoviSpremni = false;
+
+function nadjiGlas(){
+  if(!('speechSynthesis' in window)) return;
+  const svi = speechSynthesis.getVoices();
+  if(!svi.length) return;
+  grckiGlas = svi.find(v => /^el([-_]|$)/i.test(v.lang)) || null;
+  glasoviSpremni = true;
+  const info = document.querySelector('#audio-info');
+  if(info && !grckiGlas){
+    info.classList.add('vidi');
+    info.innerHTML = 'Napomena: na ovom uređaju nije pronađen grčki glas, pa će izgovor biti približan. ' +
+      'Na Windowsu se dodaje u Settings → Time &amp; language → Speech, na Androidu u podešavanjima Google TTS-a. ' +
+      'iPhone i Mac obično već imaju grčki.';
+  }
+}
+if('speechSynthesis' in window){
+  nadjiGlas();
+  speechSynthesis.onvoiceschanged = nadjiGlas;
+}
+
+function izgovori(tekst, dugme){
+  if(!('speechSynthesis' in window)){ return; }
+  speechSynthesis.cancel();
+  document.querySelectorAll('.zvuk.svira').forEach(b => b.classList.remove('svira'));
+  const u = new SpeechSynthesisUtterance(String(tekst).replace(/[;]/g, '?'));
+  u.lang = 'el-GR';
+  if(grckiGlas) u.voice = grckiGlas;
+  u.rate = 0.85;
+  if(dugme){
+    dugme.classList.add('svira');
+    u.onend = u.onerror = () => dugme.classList.remove('svira');
+  }
+  speechSynthesis.speak(u);
+}
+
+function dugmeZvuk(tekst, veliko){
+  return '<button class="zvuk' + (veliko ? ' zvuk-veliki' : '') +
+         '" data-zvuk="' + esc(tekst).replace(/"/g,'&quot;') +
+         '" title="Izgovori" aria-label="Izgovori">' + IKONA + '</button>';
+}
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('.zvuk');
+  if(!b) return;
+  e.preventDefault(); e.stopPropagation();
+  izgovori(b.dataset.zvuk, b);
+});
 
 /* ══════════ BRZE FRAZE ══════════ */
 
@@ -1063,12 +1139,12 @@ function crtajFraze(){
     html += `<summary>${esc(tema)}<span class="vt-n">${blokovi.length}</span><span class="vt-plus">+</span></summary>`;
     blokovi.forEach(([gr, iz, sr, primeri]) => {
       html += `<div class="fr-blok"><div class="fr-glava">`;
-      html += `<div class="fr-gr">${istakni(gr, upit)}</div>`;
+      html += `<div class="fr-gr">${istakni(gr, upit)}${dugmeZvuk(gr)}</div>`;
       html += `<div class="fr-iz">${esc(iz)}</div>`;
       html += `<div class="fr-sr">${istakni(sr, upit)}</div></div>`;
       primeri.forEach(([pg, pi, ps]) => {
         html += `<div class="fr-prim">`;
-        html += `<div class="p-gr">${istakni(pg, upit)}</div>`;
+        html += `<div class="p-gr">${istakni(pg, upit)}${dugmeZvuk(pg)}</div>`;
         html += `<div class="p-iz">${esc(pi)}</div>`;
         html += `<div class="p-sr">${istakni(ps, upit)}</div></div>`;
       });
@@ -1147,8 +1223,8 @@ function crtajKarticu(){
       ${TEME.concat(FR_TEME).map(t=>`<button data-t="${esc(t)}" class="${temaFiltar===t?'on':''}">${esc(t)}</button>`).join('')}
     </div>
     <div class="karta-flip">
-      <div class="veliko">${esc(lice)}</div>
-      <div class="malo">${okrenuto ? esc(nalicje) + ' · ' + esc(tema) : '&nbsp;'}</div>
+      <div class="veliko">${esc(lice)}${smer === 'GR' ? dugmeZvuk(g, true) : ''}</div>
+      <div class="malo">${okrenuto ? esc(nalicje) + (smer === 'SR' ? dugmeZvuk(g) : '') + ' · ' + esc(tema) : '&nbsp;'}</div>
       <div class="malo" style="font:400 13px 'IBM Plex Mono',monospace;color:var(--maslina)">${esc(pomoc || '')}</div>
     </div>
     <div class="flip-kontrole">
