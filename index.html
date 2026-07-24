@@ -209,6 +209,27 @@ header{
 .telo b{color:var(--mastilo)}
 .telo i{color:var(--egej);font-style:normal;font-weight:500}
 
+
+/* ── izgovor (audio) ── */
+.zvuk{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;margin-left:6px;vertical-align:middle;
+  border:1px solid var(--ivica);border-radius:50%;background:#fff;
+  cursor:pointer;color:var(--tiho);padding:0;flex:none;
+  transition:all .15s;line-height:1;
+}
+.zvuk:hover{border-color:var(--egej);color:var(--egej);background:var(--egej-svetlo)}
+.zvuk.svira{background:var(--egej);border-color:var(--egej);color:#fff}
+.zvuk svg{width:11px;height:11px;display:block}
+.zvuk-veliki{width:34px;height:34px;margin-left:10px}
+.zvuk-veliki svg{width:16px;height:16px}
+.audio-info{
+  font:400 12.5px Inter,sans-serif;color:var(--tiho);
+  background:#FFF6E0;border:1px solid #F0E0B0;border-radius:8px;
+  padding:9px 13px;margin:14px 0 0;display:none;
+}
+.audio-info.vidi{display:block}
+
 footer{border-top:1px solid var(--ivica);padding:30px 0 44px;color:var(--tiho);font-size:14px}
 
 @media(max-width:560px){
@@ -243,6 +264,7 @@ footer{border-top:1px solid var(--ivica);padding:30px 0 44px;color:var(--tiho);f
     <h1>Grčki za <em>početak</em>.</h1>
     <p id="hero-p">Petnaest lekcija gramatike, jedna dnevno — od azbuke do prošlog vremena. Rečnik, dijalog i vežbe sa rešenjima.</p>
     <div class="brojke" id="brojke"></div>
+    <p class="audio-info" id="audio-info"></p>
   </div>
 </section>
 
@@ -429,6 +451,65 @@ fraze:[["Πού είναι το ΑΤΜ;","pu íne to atm?","Gde je bankomat?"],[
 </script>
 <script>
 const $=s=>document.querySelector(s);
+
+/* ══════════ IZGOVOR (audio) ══════════ */
+const IKONA='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>';
+
+let grckiGlas=null;
+function nadjiGlas(){
+  if(!('speechSynthesis' in window))return;
+  const svi=speechSynthesis.getVoices();
+  if(!svi.length)return;
+  grckiGlas=svi.find(v=>/^el([-_]|$)/i.test(v.lang))||null;
+  const info=document.querySelector('#audio-info');
+  if(info&&!grckiGlas){
+    info.classList.add('vidi');
+    info.innerHTML='Napomena: na ovom uređaju nema grčkog glasa, pa je izgovor približan. '+
+      'Dodaje se u Windows: Settings → Time &amp; language → Speech; Android: podešavanja Google TTS-a. '+
+      'iPhone i Mac obično već imaju grčki.';
+  }
+}
+if('speechSynthesis' in window){ nadjiGlas(); speechSynthesis.onvoiceschanged=nadjiGlas; }
+
+function izgovori(t,dugme){
+  if(!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();
+  document.querySelectorAll('.zvuk.svira').forEach(b=>b.classList.remove('svira'));
+  const u=new SpeechSynthesisUtterance(String(t).replace(/;/g,'?'));
+  u.lang='el-GR'; if(grckiGlas)u.voice=grckiGlas; u.rate=0.85;
+  if(dugme){dugme.classList.add('svira');u.onend=u.onerror=()=>dugme.classList.remove('svira');}
+  speechSynthesis.speak(u);
+}
+
+/* da li tekst sadrži grčka slova */
+function imaGrcki(t){ return /[\u0370-\u03FF\u1F00-\u1FFF]/.test(String(t)); }
+
+/* iz mešovitog teksta izvuci samo grčki deo */
+function samoGrcki(t){
+  let s=String(t).replace(/<[^>]*>/g,'');          // skini HTML
+  s=s.replace(/\([^)]*\)/g,' ');                    // skini (transkripciju)
+  s=s.split(/\s[=—–]\s|\s-\s/)[0];                  // odseci posle " = " ili " — "
+  s=s.replace(/[a-zA-ZčćšžđČĆŠŽĐ]{2,}/g,' ');      // skini latinične reči
+  s=s.replace(/\s{2,}/g,' ').replace(/^[\s.,;:·\/]+|[\s.,·\/]+$/g,'').trim();
+  return s;
+}
+
+/* dugme; vraća '' ako nema grčkog */
+function zv(t,veliko){
+  if(!t||!imaGrcki(t))return '';
+  const cist=samoGrcki(t);
+  if(!cist||!imaGrcki(cist))return '';
+  return '<button class="zvuk'+(veliko?' zvuk-veliki':'')+
+         '" data-zvuk="'+cist.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')+
+         '" title="Izgovori" aria-label="Izgovori">'+IKONA+'</button>';
+}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.zvuk'); if(!b)return;
+  e.preventDefault(); e.stopPropagation();
+  izgovori(b.dataset.zvuk,b);
+});
+
 const esc=t=>String(t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const norm=t=>String(t).toLowerCase()
   .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
@@ -540,7 +621,7 @@ function blokHtml(b){
     const zag=b.zaglavlje&&b.zaglavlje.some(x=>x)
       ? `<thead><tr>${b.zaglavlje.map(x=>`<th>${x}</th>`).join("")}</tr></thead>`:"";
     return `<div class="k-omot"><table class="k-tab">${zag}<tbody>`+
-      b.redovi.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")+
+      b.redovi.map(r=>`<tr>${r.map(c=>`<td>${c}${zv(c)}</td>`).join("")}</tr>`).join("")+
       `</tbody></table></div>`;
   }
   return "";
@@ -564,18 +645,18 @@ function otvori(id){
   $("#m-naslov").textContent=l.naslov;
   $("#m-gr").textContent=l.gr;
   let h="";
-  const par=([g,i,s])=>`<div class="par"><div class="g">${esc(g)}</div><div class="iz">${esc(i)}</div><div class="s">${esc(s)}</div></div>`;
+  const par=([g,i,s])=>`<div class="par"><div class="g">${esc(g)}${zv(g)}</div><div class="iz">${esc(i)}</div><div class="s">${esc(s)}</div></div>`;
   if(l.cuti) h+=`<h4>Šta ćeš najčešće čuti</h4>`+l.cuti.map(par).join("");
   if(l.recnik) h+=`<h4>Rečnik</h4><div class="rec">`+
-    l.recnik.map(([g,i,s])=>`<div class="g">${esc(g)}</div><div class="iz">${esc(i)}</div><div>${esc(s)}</div>`).join("")+`</div>`;
+    l.recnik.map(([g,i,s])=>`<div class="g">${esc(g)}${zv(g)}</div><div class="iz">${esc(i)}</div><div>${esc(s)}</div>`).join("")+`</div>`;
   if(l.dijalog) h+=`<h4>Dijalog</h4><div class="dij">`+
-    l.dijalog.map(([g,iz,s],i)=>`<div class="replika ${i%2?'b':''}"><div class="g">${esc(g)}</div><div class="iz">${esc(iz)}</div><div class="s">${esc(s)}</div></div>`).join("")+`</div>`;
+    l.dijalog.map(([g,iz,s],i)=>`<div class="replika ${i%2?'b':''}"><div class="g">${esc(g)}${zv(g)}</div><div class="iz">${esc(iz)}</div><div class="s">${esc(s)}</div></div>`).join("")+`</div>`;
   if(l.fraze) h+=`<h4>Korisne fraze</h4>`+l.fraze.map(par).join("");
   if(l.napomena) h+=`<h4>Kako Grci zaista govore</h4><div class="napomena">${esc(l.napomena)}</div>`;
   if(l.vezba) h+=`<h4>Mini vežba</h4><div class="vezba">`+
     l.vezba.map(([p,o,iz])=>`<div class="zad"><div class="pit">${esc(p)}</div>
       <button class="otkrij">Prikaži odgovor</button>
-      <div class="odg">${esc(o)}<div class="iz">${esc(iz)}</div></div></div>`).join("")+`</div>`;
+      <div class="odg">${esc(o)}${zv(o)}<div class="iz">${esc(iz)}</div></div></div>`).join("")+`</div>`;
   $("#m-telo").innerHTML=h;
   $("#m-telo").scrollTop=0;
   $("#modal").classList.add("vidi");
@@ -613,7 +694,7 @@ function crtajKarticu(){
   const [g,iz,s,lek]=fond[idx];
   $("#m-telo").innerHTML=`
     <div class="karta-flip">
-      <div class="veliko">${esc(g)}</div>
+      <div class="veliko">${esc(g)}${zv(g,true)}</div>
       <div class="malo">${okrenuto?esc(s)+" · "+esc(lek):"&nbsp;"}</div>
       <div class="malo" style="font:400 15px 'IBM Plex Mono',monospace;color:var(--maslina)">${esc(iz)}</div>
     </div>
