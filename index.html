@@ -455,29 +455,59 @@ const $=s=>document.querySelector(s);
 /* ══════════ IZGOVOR (audio) ══════════ */
 const IKONA='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>';
 
-let grckiGlas=null;
+let grckiGlas=null, glasoviUcitani=false, zagrejano=false, pokusaji=0;
+const IMA_TTS = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+
 function nadjiGlas(){
-  if(!('speechSynthesis' in window))return;
+  if(!IMA_TTS)return;
   const svi=speechSynthesis.getVoices();
-  if(!svi.length)return;
+  if(!svi.length)return;                 // lista još nije stigla
+  glasoviUcitani=true;
   grckiGlas=svi.find(v=>/^el([-_]|$)/i.test(v.lang))||null;
   const info=document.querySelector('#audio-info');
-  if(info&&!grckiGlas){
-    info.classList.add('vidi');
-    info.innerHTML='Napomena: na ovom uređaju nema grčkog glasa, pa je izgovor približan. '+
-      'Dodaje se u Windows: Settings → Time &amp; language → Speech; Android: podešavanja Google TTS-a. '+
-      'iPhone i Mac obično već imaju grčki.';
+  if(info){
+    if(!grckiGlas){
+      info.classList.add('vidi');
+      info.innerHTML='Napomena: na ovom uređaju nema grčkog glasa, pa je izgovor približan ili nem. '+
+        'Android: Podešavanja → Opšte upravljanje → Tekst u govor → zupčanik pored Google → Instaliraj glasove → Grčki. '+
+        'Windows: Settings → Time &amp; language → Speech. iPhone i Mac obično već imaju grčki.';
+    } else {
+      info.classList.remove('vidi');
+    }
   }
 }
-if('speechSynthesis' in window){ nadjiGlas(); speechSynthesis.onvoiceschanged=nadjiGlas; }
+
+if(IMA_TTS){
+  nadjiGlas();
+  speechSynthesis.onvoiceschanged=nadjiGlas;
+  // Android/Chrome često ne okine onvoiceschanged — proveravaj u intervalima
+  const tajmer=setInterval(()=>{
+    pokusaji++;
+    nadjiGlas();
+    if(glasoviUcitani||pokusaji>20) clearInterval(tajmer);   // ~10s pa odustani
+  },500);
+}
 
 function izgovori(t,dugme){
-  if(!('speechSynthesis' in window))return;
+  if(!IMA_TTS)return;
+  // "zagrevanje" — prvi korisnički klik otključava zvuk na Androidu
+  if(!zagrejano){
+    try{ speechSynthesis.resume(); speechSynthesis.speak(new SpeechSynthesisUtterance('')); }catch(e){}
+    zagrejano=true;
+  }
+  if(!glasoviUcitani) nadjiGlas();       // poslednji pokušaj pre izgovora
   speechSynthesis.cancel();
   document.querySelectorAll('.zvuk.svira').forEach(b=>b.classList.remove('svira'));
   const u=new SpeechSynthesisUtterance(String(t).replace(/;/g,'?'));
   u.lang='el-GR'; if(grckiGlas)u.voice=grckiGlas; u.rate=0.85;
-  if(dugme){dugme.classList.add('svira');u.onend=u.onerror=()=>dugme.classList.remove('svira');}
+  if(dugme){
+    dugme.classList.add('svira');
+    u.onend=u.onerror=()=>dugme.classList.remove('svira');
+    // sigurnosno gašenje ako onend ne okine
+    setTimeout(()=>dugme.classList.remove('svira'), 8000);
+  }
+  // Chrome ponekad "zaspi" — probudi ga pre speak
+  try{ speechSynthesis.resume(); }catch(e){}
   speechSynthesis.speak(u);
 }
 
